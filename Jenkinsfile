@@ -1,95 +1,92 @@
 /*
- * Jenkinsfile  –  Python backend + React frontend
- * Requires only:
- *   • “Docker” plugin  (ID: docker-plugin)       →  gives the dockerContainer agent
- *   • a Jenkins node that can run `docker`
- *
- * When you eventually install the “Docker Pipeline” plugin (docker-workflow)
- * you can replace each `dockerContainer { image '…' }` block with
- * `docker { image '…' args '-u root:root' reuseNode true }`
- * and gain extra options, but it’s not needed for basic CI.
+ * Jenkinsfile  – Python backend + React frontend
+ * ------------------------------------------------
+ * • Requires only:   Docker CLI on the Jenkins node.
+ * • No plugin installs, no admin rights.
+ * • Test stages auto-enable when you add tests.
  */
 
 pipeline {
-    agent none                    // every stage picks its own container
-    options { timestamps() }      // built-in; no extra plugin required
+    agent any                       // run on the regular Jenkins node
+    options { timestamps() }        // built-in; no plugin needed
 
     stages {
 
         /* ─────────────────────────────
-           Shared checkout (one per job)
+           1. Checkout once            │
            ───────────────────────────── */
         stage('Checkout') {
-            agent any
             steps { checkout scm }
         }
 
         /* ─────────────────────────────
-           1.  BACKEND  –  build
+           2. Backend – Build          │
            ───────────────────────────── */
         stage('Backend – Build') {
-            agent {
-                dockerContainer { image 'python:3.12-alpine' }
-            }
             steps {
-                dir('backend') {
-                    sh '''
-                        python -m pip install --upgrade pip
-                        if [ -f requirements.txt ]; then
-                            pip install -r requirements.txt
-                        fi
-                        # byte-compile every .py file (skip tests/ when it arrives)
-                        python - <<'PY'
+                sh '''
+                    # Run backend build in a throw-away Python container
+                    docker run --rm \
+                        -v "$PWD/backend":/src \
+                        -w /src \
+                        python:3.12-alpine \
+                        sh -c "
+                            python -m pip install --upgrade pip &&
+                            [ -f requirements.txt ] && pip install -r requirements.txt || true &&
+                            python - <<'PY'
 import pathlib, py_compile
 for p in pathlib.Path('.').rglob('*.py'):
     if 'tests' not in p.parts:
         py_compile.compile(str(p), doraise=True)
 PY
-                    '''
-                }
+                        "
+                '''
             }
         }
 
         /* ─────────────────────────────
-           2.  BACKEND  –  tests (optional)
-           Runs only after you create backend/tests/
+           3. Backend – Test (optional)│
+           Runs only if backend/tests/ │
            ───────────────────────────── */
         stage('Backend – Test') {
             when { expression { fileExists('backend/tests') } }
-            agent {
-                dockerContainer { image 'python:3.12-alpine' }
-            }
             steps {
-                dir('backend') {
-                    sh '''
-                        pip install --quiet pytest
-                        pytest --junit-xml ../test-reports/backend.xml
-                    '''
-                }
+                sh '''
+                    docker run --rm \
+                        -v "$PWD/backend":/src \
+                        -w /src \
+                        python:3.12-alpine \
+                        sh -c "
+                            pip install --quiet pytest &&
+                            pytest -q --junit-xml /src/../test-reports/backend.xml
+                        "
+                '''
             }
             post {
                 always {
-                    /* allowEmptyResults keeps the stage green
-                       until you actually produce results */
-                    junit testResults: 'test-reports/backend.xml',
-                          allowEmptyResults: true
+                    junit allowEmptyResults: true,
+                          testResults: 'test-reports/backend.xml'
                 }
             }
         }
 
         /* ─────────────────────────────
-           3.  FRONTEND  –  build
+           4. Frontend – Build         │
            ───────────────────────────── */
         stage('Frontend – Build') {
-            agent {
-                dockerContainer { image 'node:20-alpine' }
-            }
-            environment { CI = 'true' }   // keeps CRA / Vite quiet
+            environment { CI = 'true' }
             steps {
-                dir('frontend') {
-                    sh 'npm ci'
-                    sh 'npm run build'
-                }
+                sh '''
+                    docker run --rm \
+                        -v "$PWD/frontend":/src \
+                        -w /src \
+                        -e CI=true \
+                        node:20-alpine \
+                        sh -c "
+                            npm ci &&
+                            npm run build
+                        "
+                '''
             }
             post {
                 success {
@@ -100,41 +97,40 @@ PY
         }
 
         /* ─────────────────────────────
-           4.  FRONTEND  –  tests (optional)
-           Runs only when you add a Jest/Vitest setup that outputs junit.xml
+           5. Frontend – Test (optional)
+           Runs only if __tests__ exist │
            ───────────────────────────── */
         stage('Frontend – Test') {
             when { expression { fileExists('frontend/src/__tests__') } }
-            agent {
-                dockerContainer { image 'node:20-alpine' }
-            }
             environment { CI = 'true' }
             steps {
-                dir('frontend') {
-                    sh '''
-                        npm ci
-                        # make sure you configure jest-junit or vitest-junit
-                        # to write junit.xml into the project root
-                        npm test -- --ci --runInBand
-                    '''
-                }
+                sh '''
+                    docker run --rm \
+                        -v "$PWD/frontend":/src \
+                        -w /src \
+                        -e CI=true \
+                        node:20-alpine \
+                        sh -c "
+                            npm ci &&
+                            # assumes jest-junit or vitest-junit writes junit.xml
+                            npm test -- --ci --runInBand
+                        "
+                '''
             }
             post {
                 always {
-                    junit testResults: 'frontend/junit.xml',
-                          allowEmptyResults: true
+                    junit allowEmptyResults: true,
+                          testResults: 'frontend/junit.xml'
                 }
             }
         }
     }
 
-    /* ─────────────────────────────
-       House-keeping
-       ───────────────────────────── */
+    /* ─────────────
+       Housekeeping
+       ───────────── */
     post {
-        success { echo '🎉  Build finished successfully!' }
-        failure { echo '💥  Build failed – check the stage logs.' }
-        /* requires “Workspace Cleanup” plugin; remove if you don’t have it */
-        cleanup { cleanWs() }
+        success { echo '🎉  Build completed (tests will auto-run once you add them).' }
+        failure { echo '💥  Build failed – check the console log.' }
     }
 }
