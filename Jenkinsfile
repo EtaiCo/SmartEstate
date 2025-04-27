@@ -1,16 +1,81 @@
 pipeline {
     agent any
+
+    // Define tools installed via Jenkins global configuration
+    tools {
+        nodejs 'NodeJS 14'       // Name of your Node.js installation in Jenkins
+        python 'Python3'         // Name of your Python installation in Jenkins
+    }
+
+    environment {
+        VENV_DIR = 'venv'
+    }
+
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                sh 'sudo docker run --rm -v "${WORKSPACE}:/app" -w /app python:2-alpine python -m py_compile sources/add2vals.py sources/calc.py'
+                // Pull code from SCM (Git)
+                checkout scm
             }
         }
-        stage('Test') {
+
+        stage('Setup Backend') {
             steps {
-                sh 'sudo docker run --rm -v "${WORKSPACE}:/app" -w /app qnib/pytest py.test --verbose --junit-xml test-reports/results.xml sources/test_calc.py'
-                junit 'test-reports/results.xml'
+                // Create and activate Python virtual environment, then install dependencies
+                sh 'python3 -m venv ${VENV_DIR}'
+                sh '. ${VENV_DIR}/bin/activate && pip install -r requirements.txt'
             }
+        }
+
+        stage('Test Backend') {
+            steps {
+                // Run backend tests with pytest
+                sh '. ${VENV_DIR}/bin/activate && pytest --maxfail=1 --disable-warnings -q'
+            }
+        }
+
+        stage('Setup Frontend') {
+            steps {
+                // Install frontend dependencies
+                dir('frontend') {
+                    sh 'npm install'
+                }
+            }
+        }
+
+        stage('Test Frontend') {
+            steps {
+                // Run frontend tests (adjust if using a different test runner)
+                dir('frontend') {
+                    sh 'npm test -- --watchAll=false'
+                }
+            }
+        }
+
+        stage('Build Frontend') {
+            steps {
+                // Build production-ready React app
+                dir('frontend') {
+                    sh 'npm run build'
+                }
+            }
+        }
+
+        stage('Archive Artifacts') {
+            steps {
+                // Archive built frontend assets
+                archiveArtifacts artifacts: 'frontend/build/**', fingerprint: true
+            }
+        }
+
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Please check the logs for details.'
         }
     }
 }
