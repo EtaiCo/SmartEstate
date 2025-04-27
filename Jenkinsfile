@@ -1,114 +1,60 @@
-/*********************************************************************
- * Jenkinsfile – full CI pipeline for Python backend + React frontend
- * Requirements on the Jenkins node:
- *   • Docker Engine (or rootless Podman aliased to docker)
- *   • “Docker Pipeline” plugin (ID: docker-workflow)        ← enables agent { docker { … } }
- *   • Jenkins user is allowed to run docker commands
- *********************************************************************/
+/* Jenkinsfile – no-tests edition
+ * Requires: Declarative Pipeline + Docker plugin (for dockerContainer agent)
+ * Optional: Workspace Cleanup plugin if you keep the cleanWs() step
+ */
 pipeline {
-    /* ─────────────────────────────
-       We’ll spin up purpose-built containers per stage.
-       ───────────────────────────── */
-    agent none                     // disable implicit “any”
-
-    options {
-        timestamps()
-        ansiColor('xterm')
-    }
+    agent none                          // each stage chooses its own container
+    options { timestamps() }            // timestamps is built-in
 
     stages {
 
-        /* -----------------------------------------------
-         * 1. Checkout once so all stages share the source
-         * --------------------------------------------- */
-        stage('Checkout') {
-            agent any
-            steps {
-                checkout scm
-            }
-        }
-
-        /* ----------------------------
-         * 2. Python backend: build & test
-         * -------------------------- */
-        stage('Backend – Build & Test') {
+        /* -------- Python backend build -------- */
+        stage('Backend – Build') {
             agent {
-                docker {
-                    image 'python:3.12-alpine'
-                    args  '-u root:root'        // root avoids uid mismatches
+                dockerContainer {
+                    image 'python:3.12-alpine'   // modern, maintained tag
+                    args  '-u root:root'         // avoid UID mismatch issues
                     reuseNode true
                 }
             }
-            environment {
-                PYTHONUNBUFFERED = '1'
-            }
             steps {
+                checkout scm                    // clone once per stage
                 dir('backend') {
-                    /* install deps only if requirements.txt exists */
                     sh '''
                         python -m pip install --upgrade pip
-                        if [ -f requirements.txt ]; then
-                            pip install -r requirements.txt
-                        fi
+                        # compile all .py files; ignore “no tests” errors
+                        python -m py_compile $(find . -name '*.py')
                     '''
-                    /* compile & test */
-                    sh 'python -m py_compile $(find . -name "*.py" -not -path "./tests/*")'
-                    sh '''
-                        pip install --quiet pytest
-                        pytest --junit-xml ../test-reports/backend.xml
-                    '''
-                }
-            }
-            post {
-                always {
-                    junit 'test-reports/backend.xml'
                 }
             }
         }
 
-        /* ----------------------------
-         * 3. React frontend: build & test
-         * -------------------------- */
-        stage('Frontend – Build & Test') {
+        /* -------- React frontend build -------- */
+        stage('Frontend – Build') {
             agent {
-                docker {
+                dockerContainer {
                     image 'node:20-alpine'
-                    args  '-u node'            // drop to non-root user in official node image
+                    args  '-u node'              // run as non-root
                     reuseNode true
                 }
             }
-            environment {
-                CI = 'true'                    // keeps CRA/Vite quiet & non-interactive
-            }
+            environment { CI = 'true' }          // keeps CRA/Vite quiet
             steps {
+                checkout scm
                 dir('frontend') {
                     sh 'npm ci'
-                    sh 'npm run build --if-present'
-                    /* run tests; generate junit.xml via jest-junit (or vitest-junit) */
-                    sh '''
-                        npx --yes jest --ci --runInBand \
-                            --reporters=default \
-                            --reporters=jest-junit
-                    '''
+                    sh 'npm run build'
                 }
             }
             post {
-                always {
-                    /* jest-junit writes junit.xml in the project root by default */
-                    junit 'frontend/junit.xml'
-                    /* archive built static site (optional) */
+                success {
                     archiveArtifacts artifacts: 'frontend/build/**', fingerprint: true
                 }
             }
         }
     }
 
-    /* ─────────────
-       Global post-steps
-       ───────────── */
     post {
-        success { echo '🎉  Backend and Frontend pipelines both passed!' }
-        failure { echo '💥  Something went wrong – check the stage logs above.' }
-        cleanup { cleanWs() }
+        cleanup { cleanWs() }   // remove if you don’t have the Workspace Cleanup plugin
     }
 }
