@@ -3,7 +3,6 @@ pipeline {
 
     // Define tools installed via Jenkins global configuration
     tools {
-        nodejs 'NodeJS 14'       // Name of your Node.js installation in Jenkins
         python 'Python3'         // Name of your Python installation in Jenkins
     }
 
