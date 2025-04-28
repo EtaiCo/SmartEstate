@@ -87,6 +87,27 @@ class POIResponse(BaseModel):
     address: Optional[str]
     tags: Optional[str]
 
+class AdCreateSchema(BaseModel):
+    ad_type: str
+    property_type: str
+    address: str
+    rooms: float
+    size: int
+    price: int
+    floor: Optional[int] = None
+    has_elevator: Optional[bool] = False
+    has_parking: Optional[bool] = False
+    description: Optional[str] = None
+    publisher_name: str
+    contact_phone: str
+    has_garden: Optional[bool] = False
+    has_balcony: Optional[bool] = False
+    pets_allowed: Optional[bool] = False
+    accessibility: Optional[bool] = False
+    publish_date: Optional[str] = None  # Format: YYYY-MM-DD
+    latitude: float
+    longitude: float
+
     class Config:
         from_attributes = True
 
@@ -483,3 +504,41 @@ async def search_pois(q: str, db: db_dependency):
         print(f"Geocoding error: {e}")
     
     return results
+
+@app.post("/ads/")
+def create_ad(request: Request, ad_data: AdCreateSchema, db: db_dependency):
+    user = request.session.get("user")
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    db_user = db.query(models.Users).filter(models.Users.email == user["email"]).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    new_ad = models.Ad(
+        user_id=db_user.ID,
+        ad_type=ad_data.ad_type,
+        property_type=ad_data.property_type,
+        address=ad_data.address,
+        latitude=ad_data.latitude,
+        longitude=ad_data.longitude,
+        rooms=ad_data.rooms,
+        size=ad_data.size,
+        price=ad_data.price,
+        floor=ad_data.floor,
+        has_elevator=ad_data.has_elevator,
+        has_parking=ad_data.has_parking,
+        description=ad_data.description,
+        publisher_name=ad_data.publisher_name,
+        contact_phone=ad_data.contact_phone,
+        has_garden=ad_data.has_garden,
+        has_balcony=ad_data.has_balcony,
+        pets_allowed=ad_data.pets_allowed,
+        accessibility=ad_data.accessibility,
+        publish_date=ad_data.publish_date
+        
+    )
+    db.add(new_ad)
+    db.commit()
+    db.refresh(new_ad)
+    return new_ad

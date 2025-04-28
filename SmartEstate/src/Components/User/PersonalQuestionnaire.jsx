@@ -1,77 +1,91 @@
-import React, { useState } from 'react';
-import { Form, Button, Container, Card, Navbar, Nav } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState } from "react";
+import { Form, Button, Container, Card, Navbar, Nav } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const PersonalQuestionnaire = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    propertyType: '',
-    budget: '',
-    location: '',
-    rooms: '',
-    size: '',
+    propertyType: "",
+    budget: "",
+    location: "",
+    rooms: "",
+    size: "",
     parking: false,
     elevator: false,
     balcony: false,
     garden: false,
     petsAllowed: false,
     accessibility: false,
-    additionalNotes: ''
+    additionalNotes: "",
   });
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(
-        'http://localhost:8000/user-preferences/',
-        formData,
-        { withCredentials: true }
-      );
-      navigate('/profile');
+      await axios.post("http://localhost:8000/user-preferences/", formData, {
+        withCredentials: true,
+      });
+      navigate("/profile");
     } catch (error) {
-      console.error('Error saving preferences:', error);
-      alert('שגיאה בשמירת ההעדפות. אנא נסה שוב.');
+      console.error("Error saving preferences:", error);
+      alert("שגיאה בשמירת ההעדפות. אנא נסה שוב.");
     }
   };
 
   return (
-    <div className="min-vh-100" style={{ 
-      background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-      paddingBottom: '50px'
-    }}>
+    <div
+      className="min-vh-100"
+      style={{
+        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+        paddingBottom: "50px",
+      }}
+    >
       <Navbar bg="dark" variant="dark" expand="lg" className="px-4">
         <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
-          <span className="fw-bold" style={{ fontSize: '1.5rem' }}>SMART</span>
-          <span className="text-primary fw-bold" style={{ fontSize: '1.5rem' }}>ESTATE</span>
+          <span className="fw-bold" style={{ fontSize: "1.5rem" }}>
+            SMART
+          </span>
+          <span className="text-primary fw-bold" style={{ fontSize: "1.5rem" }}>
+            ESTATE
+          </span>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link as={Link} to="/">דף הבית</Nav.Link>
-            <Nav.Link as={Link} to="/profile">אזור אישי</Nav.Link>
+            <Nav.Link as={Link} to="/">
+              דף הבית
+            </Nav.Link>
+            <Nav.Link as={Link} to="/profile">
+              אזור אישי
+            </Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Navbar>
 
-      <Container className="py-5" dir="rtl" style={{ maxWidth: '900px' }}>
+      <Container className="py-5" dir="rtl" style={{ maxWidth: "900px" }}>
         <div className="text-center mb-5">
-          <h1 className="display-4 fw-bold mb-3" style={{ 
-            background: 'linear-gradient(45deg, #2193b0, #6dd5ed)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}>
+          <h1
+            className="display-4 fw-bold mb-3"
+            style={{
+              background: "linear-gradient(45deg, #2193b0, #6dd5ed)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
             שאלון התאמה אישי
           </h1>
-          <p className="lead text-muted">מלא את הפרטים שלך ונתאים לך את הנכס המושלם</p>
+          <p className="lead text-muted">
+            מלא את הפרטים שלך ונתאים לך את הנכס המושלם
+          </p>
         </div>
 
         <Card className="shadow-lg border-0">
@@ -80,18 +94,20 @@ const PersonalQuestionnaire = () => {
               <div className="row">
                 <div className="col-md-6">
                   <Form.Group className="mb-4">
-                    <Form.Label className="fw-bold text-primary">סוג הנכס המבוקש</Form.Label>
-                    <Form.Select 
-                      name="propertyType" 
-                      value={formData.propertyType} 
-                      onChange={handleChange} 
+                    <Form.Label className="fw-bold text-primary">
+                      סוג הנכס המבוקש
+                    </Form.Label>
+                    <Form.Select
+                      name="propertyType"
+                      value={formData.propertyType}
+                      onChange={handleChange}
                       required
                       className="form-control-lg"
                     >
                       <option value="">בחר סוג נכס</option>
                       <option value="apartment">דירה</option>
                       <option value="house">בית פרטי</option>
-                      <option value="penthouse">נטהאוס</option>
+                      <option value="penthouse">פנטהאוס</option>
                       <option value="studio">סטודיו</option>
                     </Form.Select>
                   </Form.Group>
@@ -99,7 +115,9 @@ const PersonalQuestionnaire = () => {
 
                 <div className="col-md-6">
                   <Form.Group className="mb-4">
-                    <Form.Label className="fw-bold text-primary">תקציב (בשקלים)</Form.Label>
+                    <Form.Label className="fw-bold text-primary">
+                      תקציב (בשקלים)
+                    </Form.Label>
                     <Form.Control
                       type="number"
                       name="budget"
@@ -117,7 +135,9 @@ const PersonalQuestionnaire = () => {
               <div className="row">
                 <div className="col-md-6">
                   <Form.Group className="mb-4">
-                    <Form.Label className="fw-bold text-primary">מיקום מועדף</Form.Label>
+                    <Form.Label className="fw-bold text-primary">
+                      מיקום מועדף
+                    </Form.Label>
                     <Form.Control
                       type="text"
                       name="location"
@@ -132,11 +152,13 @@ const PersonalQuestionnaire = () => {
 
                 <div className="col-md-6">
                   <Form.Group className="mb-4">
-                    <Form.Label className="fw-bold text-primary">מספר חדרים</Form.Label>
-                    <Form.Select 
-                      name="rooms" 
-                      value={formData.rooms} 
-                      onChange={handleChange} 
+                    <Form.Label className="fw-bold text-primary">
+                      מספר חדרים
+                    </Form.Label>
+                    <Form.Select
+                      name="rooms"
+                      value={formData.rooms}
+                      onChange={handleChange}
                       required
                       className="form-control-lg"
                     >
@@ -154,7 +176,9 @@ const PersonalQuestionnaire = () => {
               <div className="row">
                 <div className="col-md-6">
                   <Form.Group className="mb-4">
-                    <Form.Label className="fw-bold text-primary">גודל (במ"ר)</Form.Label>
+                    <Form.Label className="fw-bold text-primary">
+                      גודל (במ"ר)
+                    </Form.Label>
                     <Form.Control
                       type="number"
                       name="size"
@@ -170,7 +194,9 @@ const PersonalQuestionnaire = () => {
               </div>
 
               <Form.Group className="mb-4">
-                <Form.Label className="fw-bold text-primary mb-3">דרישות נוספות</Form.Label>
+                <Form.Label className="fw-bold text-primary mb-3">
+                  דרישות נוספות
+                </Form.Label>
                 <div className="row">
                   <div className="col-md-4">
                     <Form.Check
@@ -230,16 +256,16 @@ const PersonalQuestionnaire = () => {
               </Form.Group>
 
               <div className="text-center mt-5">
-                <Button 
-                  variant="primary" 
-                  type="submit" 
-                  size="lg" 
+                <Button
+                  variant="primary"
+                  type="submit"
+                  size="lg"
                   className="px-5 py-3"
                   style={{
-                    background: 'linear-gradient(45deg, #2193b0, #6dd5ed)',
-                    border: 'none',
-                    fontSize: '1.2rem',
-                    fontWeight: 'bold'
+                    background: "linear-gradient(45deg, #2193b0, #6dd5ed)",
+                    border: "none",
+                    fontSize: "1.2rem",
+                    fontWeight: "bold",
                   }}
                 >
                   שמור העדפות
@@ -253,4 +279,4 @@ const PersonalQuestionnaire = () => {
   );
 };
 
-export default PersonalQuestionnaire; 
+export default PersonalQuestionnaire;

@@ -1,5 +1,7 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text, Float
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text, Float, Date
 from database import Base
+from datetime import date
+
 
 class Users(Base):
     __tablename__ = 'Users'
@@ -51,3 +53,28 @@ class POI(Base):
     description = Column(Text, nullable=True)
     address = Column(String, nullable=True)
     tags = Column(Text, nullable=True)  # Store additional OSM tags as JSON string
+
+class Ad(Base):
+    __tablename__ = 'ads'  
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('Users.ID'), nullable=False)
+    publisher_name = Column(String, nullable=False)
+    contact_phone = Column(String, nullable=False)
+    ad_type = Column(String, nullable=False)  # "מכירה" או "השכרה"
+    property_type = Column(String, nullable=False)
+    address = Column(String, nullable=False)
+    latitude = Column(Float, nullable=False)  # Latitude coordinate
+    longitude = Column(Float, nullable=False)  # Longitude coordinate
+    rooms = Column(Float, nullable=False)
+    size = Column(Integer, nullable=False)
+    price = Column(Integer, nullable=False)
+    floor = Column(Integer, nullable=True)
+    has_elevator = Column(Boolean, default=False)
+    has_parking = Column(Boolean, default=False)
+    has_balcony = Column(Boolean, default=False)
+    has_garden = Column(Boolean, default=False)
+    pets_allowed = Column(Boolean, default=False)
+    accessibility = Column(Boolean, default=False)
+    publish_date = Column(Date, nullable=False, default=date.today)
+    description = Column(Text, nullable=True)
