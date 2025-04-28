@@ -9,3 +9,6 @@ geopy
 geoalchemy2
 shapely
 requests
+pytest
+pytest-asyncio
+httpx
