@@ -116,7 +116,15 @@ async def create_user(user: UserBase, db: db_dependency):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    return db_user
+    
+    # Return user without password
+    return {
+        "ID": db_user.ID,
+        "email": db_user.email,
+        "first_name": db_user.first_name,
+        "last_name": db_user.last_name,
+        "is_admin": db_user.is_admin
+    }
 
 @app.post("/login/")
 async def login(request: Request, login_data: LoginRequest, db: db_dependency):
