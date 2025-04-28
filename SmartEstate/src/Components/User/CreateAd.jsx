@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import { Link } from "react-router-dom";
 import { Form } from "react-bootstrap";
@@ -7,6 +8,7 @@ import SimpleSearchControl from "./SimpleSearchControl"; // Assuming you have a 
 
 const CreateAd = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     ad_type: "",
     property_type: "",
@@ -76,6 +78,7 @@ const CreateAd = () => {
         withCredentials: true,
       });
       alert("המודעה פורסמה בהצלחה!");
+      navigate("/profile"); // Redirect to user profile after successful submission
     } catch (error) {
       console.error("שגיאה בפרסום מודעה", error);
       alert("שגיאה בפרסום המודעה");

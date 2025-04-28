@@ -78,6 +78,12 @@ const UserProfile = () => {
                   שינוי סיסמה
                 </Link>
                 <Link
+                  to="/create-ad"
+                  className="btn btn-outline-secondary w-100 mb-2"
+                >
+                  פרסום מודעת מכירה/השכרה
+                </Link>
+                <Link
                   to="/personal-questionnaire"
                   className="btn btn-primary w-100"
                   style={{
