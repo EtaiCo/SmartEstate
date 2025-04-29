@@ -9,13 +9,15 @@ from starlette.middleware.sessions import SessionMiddleware
 from geopy.geocoders import Nominatim
 import json
 import requests
+from fastapi import APIRouter, Depends, Request, HTTPException
+from sqlalchemy.orm import Session
 
 
 
 
 
 app = FastAPI()
-
+router = FastAPI()
 
 @app.get("/")
 def read_root():
@@ -491,3 +493,66 @@ async def search_pois(q: str, db: db_dependency):
         print(f"Geocoding error: {e}")
     
     return results
+
+@app.get("/admin/users/{user_id}")
+async def get_user_by_id(user_id: int, request: Request, db: Session = Depends(get_db)):
+    user = request.session.get("user")
+    if not user or not user.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    db_user = db.query(models.Users).filter(models.Users.ID == user_id).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return {
+        "ID": db_user.ID,
+        "first_name": db_user.first_name,
+        "last_name": db_user.last_name,
+        "email": db_user.email,
+        "is_admin": db_user.is_admin,
+    }
+
+
+@app.delete("/users/{user_id}")
+def delete_user(user_id: int, request: Request, db: Session = Depends(get_db)):
+    # Check if user is admin
+    user_session = request.session.get("user")
+    if not user_session or not user_session.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Not authorized - Admin privileges required")
+    
+    # Find the user by ID
+    user = db.query(models.Users).filter(models.Users.ID == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Don't allow deleting yourself
+    if user.email == user_session.get("email"):
+        raise HTTPException(status_code=400, detail="Cannot delete your own account")
+    
+    # Delete the user
+    try:
+        db.delete(user)
+        db.commit()
+        return {"detail": f"User with ID {user_id} deleted successfully"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+@app.get("/admin/users")
+async def get_all_users(request: Request, db: Session = Depends(get_db)):
+    user = request.session.get("user")
+    if not user or not user.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    users = db.query(models.Users).all()
+
+    return [
+        {
+            "ID": u.ID,
+            "first_name": u.first_name,
+            "last_name": u.last_name,
+            "email": u.email,
+            "is_admin": u.is_admin,
+        }
+        for u in users
+    ]
