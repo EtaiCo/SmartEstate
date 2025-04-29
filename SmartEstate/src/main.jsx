@@ -18,6 +18,7 @@ import UserAnalytics from "./Components/Admin/UserAnalytics.jsx";
 import ManageUsers from "./Components/Admin/ManageUsers.jsx";
 import Updateprofile from "./Components/User/UpdateProfile.jsx";
 import CreateAd from "./Components/User/CreateAd.jsx";
+import ManageApartments from "./Components/Admin/ManageApartments.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -37,6 +38,8 @@ createRoot(document.getElementById("root")).render(
             <Route path="/admin/users" element={<ManageUsers />} />
             <Route path="/update-profile" element={<Updateprofile />} />
             <Route path="/create-ad" element={<CreateAd />} />
+            <Route path="/admin/listings" element={<ManageApartments />} />
+
             <Route
               path="/personal-questionnaire"
               element={<PersonalQuestionnaire />}

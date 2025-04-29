@@ -615,3 +615,58 @@ def create_ad(request: Request, ad_data: AdCreateSchema, db: db_dependency):
     db.commit()
     db.refresh(new_ad)
     return new_ad
+
+# Add these endpoints to your main.py file
+
+@app.get("/admin/ads")
+async def get_all_ads(request: Request, db: Session = Depends(get_db)):
+    user = request.session.get("user")
+    if not user or not user.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    ads = db.query(models.Ad).all()
+
+    return [
+        {
+            "id": ad.id,
+            "user_id": ad.user_id,
+            "ad_type": ad.ad_type,
+            "property_type": ad.property_type,
+            "address": ad.address,
+            "rooms": ad.rooms,
+            "size": ad.size,
+            "price": ad.price,
+            "floor": ad.floor,
+            "has_elevator": ad.has_elevator,
+            "has_parking": ad.has_parking,
+            "has_balcony": ad.has_balcony,
+            "has_garden": ad.has_garden,
+            "pets_allowed": ad.pets_allowed,
+            "accessibility": ad.accessibility,
+            "publisher_name": ad.publisher_name,
+            "contact_phone": ad.contact_phone,
+            "publish_date": str(ad.publish_date) if ad.publish_date else None
+        }
+        for ad in ads
+    ]
+
+@app.delete("/ads/{ad_id}")
+def delete_ad(ad_id: int, request: Request, db: Session = Depends(get_db)):
+    # Check if user is admin
+    user_session = request.session.get("user")
+    if not user_session or not user_session.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Not authorized - Admin privileges required")
+    
+    # Find the ad by ID
+    ad = db.query(models.Ad).filter(models.Ad.id == ad_id).first()
+    if not ad:
+        raise HTTPException(status_code=404, detail="Ad not found")
+    
+    # Delete the ad
+    try:
+        db.delete(ad)
+        db.commit()
+        return {"detail": f"Ad with ID {ad_id} deleted successfully"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
