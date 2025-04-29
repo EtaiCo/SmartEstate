@@ -15,6 +15,7 @@ import { AuthProvider } from "./Components/User/AuthContext.jsx";
 import AdminHomePage from "./Components/Admin/AdminHomePage.jsx";
 import PersonalQuestionnaire from "./Components/User/PersonalQuestionnaire.jsx";
 import UserAnalytics from "./Components/Admin/UserAnalytics.jsx";
+import ManageUsers from "./Components/Admin/ManageUsers.jsx";
 import Updateprofile from "./Components/User/UpdateProfile.jsx";
 import CreateAd from "./Components/User/CreateAd.jsx";
 
@@ -33,6 +34,7 @@ createRoot(document.getElementById("root")).render(
             <Route path="/change-password" element={<ChangePassword />} />
             <Route path="/adminHomePage" element={<AdminHomePage />} />
             <Route path="/admin/analytics" element={<UserAnalytics />} />
+            <Route path="/admin/users" element={<ManageUsers />} />
             <Route path="/update-profile" element={<Updateprofile />} />
             <Route path="/create-ad" element={<CreateAd />} />
             <Route
