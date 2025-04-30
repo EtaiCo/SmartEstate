@@ -616,8 +616,6 @@ def create_ad(request: Request, ad_data: AdCreateSchema, db: db_dependency):
     db.refresh(new_ad)
     return new_ad
 
-# Add these endpoints to your main.py file
-
 @app.get("/admin/ads")
 async def get_all_ads(request: Request, db: Session = Depends(get_db)):
     user = request.session.get("user")
