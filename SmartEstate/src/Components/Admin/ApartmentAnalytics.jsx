@@ -17,8 +17,12 @@ import {
 const ApartmentAnalytics = () => {
   const [ads, setAds] = useState([]);
   const [typeStats, setTypeStats] = useState([]);
-  const [avgPricePerRoom, setAvgPricePerRoom] = useState([]);
+  const [avgPricePerRoom, setAvgPricePerRoom] = useState({
+    sale: [],
+    rent: [],
+  });
   const [adsByDate, setAdsByDate] = useState([]);
+  const [adTypeStats, setAdTypeStats] = useState([]);
 
   useEffect(() => {
     const fetchAds = async () => {
@@ -47,23 +51,47 @@ const ApartmentAnalytics = () => {
       );
       setTypeStats(typeStatsFormatted);
 
-      // Avg price per number of rooms
-      const roomsMap = {};
+      // Ad type distribution (מכירה / השכרה)
+      const adTypeCount = { מכירה: 0, השכרה: 0 };
       adsData.forEach((ad) => {
-        const rooms = Math.round(ad.rooms);
-        if (!roomsMap[rooms]) {
-          roomsMap[rooms] = { total: 0, count: 0 };
+        if (ad.ad_type === "מכירה" || ad.ad_type === "השכרה") {
+          adTypeCount[ad.ad_type]++;
         }
-        roomsMap[rooms].total += ad.price;
-        roomsMap[rooms].count += 1;
       });
-      const avgPrice = Object.entries(roomsMap).map(([rooms, data]) => ({
-        rooms: rooms,
-        avgPrice: Math.round(data.total / data.count),
-      }));
-      setAvgPricePerRoom(avgPrice);
+      const adTypeStatsFormatted = Object.entries(adTypeCount).map(
+        ([type, count]) => ({
+          name: type,
+          value: count,
+        })
+      );
+      setAdTypeStats(adTypeStatsFormatted);
 
-      // Ads published per date
+      // Avg price per room - split by ad_type
+      const saleAds = adsData.filter((ad) => ad.ad_type === "מכירה");
+      const rentAds = adsData.filter((ad) => ad.ad_type === "השכרה");
+
+      const calculateAvgPrice = (adsSubset) => {
+        const roomsMap = {};
+        adsSubset.forEach((ad) => {
+          const rooms = Math.round(ad.rooms);
+          if (!roomsMap[rooms]) {
+            roomsMap[rooms] = { total: 0, count: 0 };
+          }
+          roomsMap[rooms].total += ad.price;
+          roomsMap[rooms].count += 1;
+        });
+        return Object.entries(roomsMap).map(([rooms, data]) => ({
+          rooms,
+          avgPrice: Math.round(data.total / data.count),
+        }));
+      };
+
+      setAvgPricePerRoom({
+        sale: calculateAvgPrice(saleAds),
+        rent: calculateAvgPrice(rentAds),
+      });
+
+      // Ads by publish date
       const dateMap = {};
       adsData.forEach((ad) => {
         const date = ad.publish_date;
@@ -85,7 +113,7 @@ const ApartmentAnalytics = () => {
     <div className="container mt-4" dir="rtl">
       <h2 className="mb-4">דוח מודעות נדל"ן</h2>
 
-      {/* Ads by Type (Pie Chart) */}
+      {/* Pie Chart: Property Types */}
       <div className="card mb-4">
         <div className="card-body">
           <h5 className="card-title">סוגי נכסים</h5>
@@ -99,7 +127,6 @@ const ApartmentAnalytics = () => {
                   cx="50%"
                   cy="50%"
                   outerRadius={100}
-                  fill="#8884d8"
                   label
                 >
                   {typeStats.map((entry, index) => (
@@ -117,13 +144,70 @@ const ApartmentAnalytics = () => {
         </div>
       </div>
 
-      {/* Average Price per Room (Bar Chart) */}
+      {/* Pie Chart: Sale vs Rent */}
       <div className="card mb-4">
         <div className="card-body">
-          <h5 className="card-title">מחיר ממוצע לפי מספר חדרים</h5>
+          <h5 className="card-title">סוג מודעה (מכירה / השכרה)</h5>
           <div style={{ width: "100%", height: 300 }}>
             <ResponsiveContainer>
-              <BarChart data={avgPricePerRoom}>
+              <PieChart>
+                <Pie
+                  data={adTypeStats}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  label
+                >
+                  {adTypeStats.map((entry, index) => (
+                    <Cell
+                      key={`type-cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      {/* Avg Price per Room - Sale */}
+      <div className="card mb-4">
+        <div className="card-body">
+          <h5 className="card-title">מחיר ממוצע לפי מס' חדרים - מכירה</h5>
+          <div style={{ width: "100%", height: 300 }}>
+            <ResponsiveContainer>
+              <BarChart data={avgPricePerRoom.sale}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="rooms"
+                  label={{
+                    value: "מס' חדרים",
+                    position: "insideBottom",
+                    offset: -5,
+                  }}
+                />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="avgPrice" name="מחיר ממוצע" fill="#8884d8" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      {/* Avg Price per Room - Rent */}
+      <div className="card mb-4">
+        <div className="card-body">
+          <h5 className="card-title">מחיר ממוצע לפי מס' חדרים - השכרה</h5>
+          <div style={{ width: "100%", height: 300 }}>
+            <ResponsiveContainer>
+              <BarChart data={avgPricePerRoom.rent}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                   dataKey="rooms"
@@ -143,7 +227,7 @@ const ApartmentAnalytics = () => {
         </div>
       </div>
 
-      {/* Ads Over Time (Bar Chart) */}
+      {/* Ads Over Time */}
       <div className="card">
         <div className="card-body">
           <h5 className="card-title">מודעות לפי תאריך פרסום</h5>
