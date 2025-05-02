@@ -9,8 +9,8 @@ from starlette.middleware.sessions import SessionMiddleware
 from geopy.geocoders import Nominatim
 import json
 import requests
-from fastapi import APIRouter, Depends, Request, HTTPException
-from sqlalchemy.orm import Session
+from datetime import date
+
 
 
 
@@ -112,6 +112,10 @@ class AdCreateSchema(BaseModel):
 
     class Config:
         from_attributes = True
+
+class ReviewCreate(BaseModel):
+    content: str
+    rating: int
 
 def get_db():
     db = SessionLocal()
@@ -668,3 +672,42 @@ def delete_ad(ad_id: int, request: Request, db: Session = Depends(get_db)):
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    
+
+
+@app.post("/reviews/")
+def create_review(
+    request: Request, 
+    review_data: ReviewCreate, 
+    db: Session = Depends(get_db)
+):
+    # Check if user is authenticated
+    user = request.session.get("user")
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    # Get user from database using session information
+    db_user = db.query(models.Users).filter(models.Users.email == user["email"]).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Create new review with the user_id from the authenticated user
+    new_review = models.Review(
+        user_id=db_user.ID,
+        content=review_data.content,
+        rating=review_data.rating,
+        created_at=date.today()  # Make sure this matches your model
+    )
+    
+    # Add review to database, commit changes, and refresh to get the full object
+    db.add(new_review)
+    db.commit()
+    db.refresh(new_review)
+
+    return {
+        "id": new_review.id,
+        "user_id": new_review.user_id,
+        "content": new_review.content,
+        "rating": new_review.rating,
+        "created_at": new_review.created_at
+    }

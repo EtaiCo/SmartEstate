@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import axios from "axios";
+import ReviewForm from "./ReviewForm"; // Import the new component
 
 const UserProfile = () => {
   const { user } = useAuth();
@@ -11,7 +12,6 @@ const UserProfile = () => {
     { id: 2, title: "דירה בירושלים, 4 חדרים", address: "ירושלים" },
     { id: 3, title: "דירה בחיפה, 2 חדרים", address: "חיפה" },
   ]);
-  const [review, setReview] = useState("");
 
   useEffect(() => {
     const fetchPreferences = async () => {
@@ -32,12 +32,6 @@ const UserProfile = () => {
       fetchPreferences();
     }
   }, [user]);
-
-  const handleReviewSubmit = (e) => {
-    e.preventDefault();
-    alert("תודה על המשוב שלך!");
-    setReview("");
-  };
 
   if (!user) {
     return (
@@ -193,29 +187,10 @@ const UserProfile = () => {
             </div>
           </div>
         </div>
-
-        {/* Reviews */}
+        {/* Reviews - Using the new component */}
         <div className="row">
           <div className="col-12 mb-4">
-            <div className="card">
-              <div className="card-body">
-                <h5 className="card-title">השאר משוב</h5>
-                <form onSubmit={handleReviewSubmit}>
-                  <div className="mb-3">
-                    <textarea
-                      className="form-control"
-                      placeholder="כתוב את חוות דעתך על הפלטפורמה..."
-                      rows="3"
-                      value={review}
-                      onChange={(e) => setReview(e.target.value)}
-                    />
-                  </div>
-                  <button type="submit" className="btn btn-success">
-                    שלח משוב
-                  </button>
-                </form>
-              </div>
-            </div>
+            <ReviewForm />
           </div>
         </div>
       </div>

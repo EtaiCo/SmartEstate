@@ -78,3 +78,12 @@ class Ad(Base):
     accessibility = Column(Boolean, default=False)
     publish_date = Column(Date, nullable=False, default=date.today)
     description = Column(Text, nullable=True)
+
+class Review(Base):
+    __tablename__ = 'reviews'
+
+    id = Column(Integer, primary_key = True, index = True)
+    user_id = Column(Integer, ForeignKey('Users.ID'), nullable = False)
+    content = Column(Text, nullable = False)
+    rating = Column(Integer, nullable = False)
+    created_at = Column(Date, default = date.today, nullable = False)
