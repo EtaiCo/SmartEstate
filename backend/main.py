@@ -711,3 +711,36 @@ def create_review(
         "rating": new_review.rating,
         "created_at": new_review.created_at
     }
+@app.get("/ads")
+async def get_ads(db: db_dependency):
+    """Get all ads for display on map"""
+    ads = db.query(models.Ad).all()
+    
+    # Convert ads to a format suitable for the frontend
+    ad_list = []
+    for ad in ads:
+        ad_dict = {
+            "id": ad.id,
+            "ad_type": ad.ad_type,
+            "property_type": ad.property_type,
+            "address": ad.address,
+            "latitude": ad.latitude,
+            "longitude": ad.longitude,
+            "rooms": ad.rooms,
+            "size": ad.size,
+            "price": ad.price,
+            "floor": ad.floor,
+            "publisher_name": ad.publisher_name,
+            "contact_phone": ad.contact_phone,
+            "has_elevator": ad.has_elevator,
+            "has_parking": ad.has_parking,
+            "has_balcony": ad.has_balcony,
+            "has_garden": ad.has_garden,
+            "pets_allowed": ad.pets_allowed,
+            "accessibility": ad.accessibility,
+            "publish_date": ad.publish_date.isoformat() if ad.publish_date else None,
+            "description": ad.description
+        }
+        ad_list.append(ad_dict)
+    
+    return ad_list
