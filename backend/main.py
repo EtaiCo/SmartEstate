@@ -14,7 +14,7 @@ import os
 
 
 
-SKIP_DB_INIT = os.environ.get('SKIP_DB_INIT', '0') == '1'
+
 
 app = FastAPI()
 router = FastAPI()
@@ -748,5 +748,3 @@ async def get_ads(db: db_dependency):
     return ad_list
 
 
-if not os.environ.get('SKIP_DB_INIT'):
-    models.Base.metadata.create_all(bind=engine)
