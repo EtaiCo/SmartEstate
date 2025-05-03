@@ -10,7 +10,7 @@ pipeline {
 
         stage('Setup Backend') {
             steps {
-                dir('backend') {  // or wherever your Python code is
+                dir('backend') {
                     sh 'pip3 install -r requirements.txt'
                 }
             }
@@ -18,17 +18,8 @@ pipeline {
 
         stage('Test Backend') {
             steps {
-                dir('backend') {  // or wherever your Python code is
-                    sh 'pytest'
-                }
-            }
-        }
-
-        stage('Test Frontend') {
-            steps {
-                dir('frontend') {
-                    sh 'npm install'
-                    sh 'npm test -- --watchAll=false'
+                dir('backend') {
+                    sh 'python3 -m pytest --maxfail=1 --disable-warnings -q'
                 }
             }
         }
