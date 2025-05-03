@@ -10,15 +10,17 @@ pipeline {
 
         stage('Setup Backend') {
             steps {
-                // Install requirements directly (without virtual environment)
-                sh 'pip3 install -r requirements.txt'
+                dir('backend') {  // or wherever your Python code is
+                    sh 'pip3 install -r requirements.txt'
+                }
             }
         }
 
         stage('Test Backend') {
             steps {
-                // Run backend tests with pytest
-                sh 'pytest --maxfail=1 --disable-warnings -q'
+                dir('backend') {  // or wherever your Python code is
+                    sh 'pytest --maxfail=1 --disable-warnings -q'
+                }
             }
         }
 
