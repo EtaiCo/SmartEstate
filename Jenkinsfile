@@ -11,10 +11,9 @@ pipeline {
         stage('Test Backend') {
             steps {
                 dir('backend') {
-                    // Install requirements directly without virtual environment
                     sh 'pip3 install -r requirements.txt --user'
-                    // Run tests using python -m pytest to ensure it finds the module
-                    sh 'python3 -m pytest --maxfail=1 --disable-warnings -q'
+                    // Set environment variable to skip actual database connection
+                    sh 'SKIP_DB_INIT=1 python3 -m pytest --maxfail=1 --disable-warnings -q tests/'
                 }
             }
         }

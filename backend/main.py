@@ -10,7 +10,7 @@ from geopy.geocoders import Nominatim
 import json
 import requests
 from datetime import date
-
+import os
 
 
 
@@ -18,6 +18,8 @@ from datetime import date
 
 app = FastAPI()
 router = FastAPI()
+
+
 
 @app.get("/")
 def read_root():
@@ -744,3 +746,7 @@ async def get_ads(db: db_dependency):
         ad_list.append(ad_dict)
     
     return ad_list
+
+
+if not os.environ.get('SKIP_DB_INIT'):
+    models.Base.metadata.create_all(bind=engine)
