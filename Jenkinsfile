@@ -12,8 +12,8 @@ pipeline {
             steps {
                 dir('backend') {
                     sh 'pip3 install -r requirements.txt --user'
-                    // Set environment variable to skip actual database connection
-                    sh 'SKIP_DB_INIT=1 python3 -m pytest --maxfail=1 --disable-warnings -q tests/'
+                    // Export the environment variable and run tests
+                    sh 'export SKIP_DB_INIT=1 && python3 -m pytest --maxfail=1 --disable-warnings -q tests/'
                 }
             }
         }

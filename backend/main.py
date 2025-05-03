@@ -14,7 +14,7 @@ import os
 
 
 
-
+SKIP_DB_INIT = os.environ.get('SKIP_DB_INIT', '0') == '1'
 
 app = FastAPI()
 router = FastAPI()
