@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        VENV_DIR = 'venv'
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -12,11 +8,17 @@ pipeline {
             }
         }
 
+        stage('Setup Backend') {
+            steps {
+                // Install requirements directly (without virtual environment)
+                sh 'pip3 install -r requirements.txt'
+            }
+        }
+
         stage('Test Backend') {
             steps {
-                sh 'python3 -m venv ${VENV_DIR}'
-                sh '. ${VENV_DIR}/bin/activate && pip install -r requirements.txt'
-                sh '. ${VENV_DIR}/bin/activate && pytest --maxfail=1 --disable-warnings -q'
+                // Run backend tests with pytest
+                sh 'pytest --maxfail=1 --disable-warnings -q'
             }
         }
 
