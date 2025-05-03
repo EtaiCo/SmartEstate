@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        VENV_DIR = 'env'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -11,20 +15,10 @@ pipeline {
         stage('Setup Backend') {
             steps {
                 dir('backend') {
-                    sh 'pip3 install -r requirements.txt'
-                }
-            }
-        }
-
-        stage('Start Backend') {
-            steps {
-                dir('backend') {
-                    // Start the FastAPI server in the background
-                    sh 'uvicorn main:app --host 0.0.0.0 --port 8000 &'
-                    // Wait for the server to start
-                    sh 'sleep 10'
-                    // Optional: verify the server is running
-                    sh 'curl http://localhost:8000/docs || true'
+                    // Create virtual environment
+                    sh 'python3 -m venv ${VENV_DIR}'
+                    // Activate and install requirements
+                    sh '. ${VENV_DIR}/bin/activate && pip install -r requirements.txt'
                 }
             }
         }
@@ -32,7 +26,21 @@ pipeline {
         stage('Test Backend') {
             steps {
                 dir('backend') {
-                    sh 'python3 -m pytest --maxfail=1 --disable-warnings -q'
+                    // Activate virtual environment and run tests
+                    sh '. ${VENV_DIR}/bin/activate && pytest --maxfail=1 --disable-warnings -q'
+                }
+            }
+        }
+
+        stage('Start Backend') {
+            steps {
+                dir('backend') {
+                    // Start the FastAPI server
+                    sh '. ${VENV_DIR}/bin/activate && uvicorn main:app --reload --host 0.0.0.0 --port 8000 &'
+                    // Wait for server to start
+                    sh 'sleep 5'
+                    // Test if server is running
+                    sh 'curl http://localhost:8000 || echo "Server not ready"'
                 }
             }
         }
@@ -46,7 +54,7 @@ pipeline {
             echo 'Pipeline failed. Please check the logs for details.'
         }
         always {
-            // Kill any running uvicorn processes
+            // Clean up by killing uvicorn process
             sh 'pkill -f uvicorn || true'
         }
     }
