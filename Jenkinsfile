@@ -19,7 +19,7 @@ pipeline {
         stage('Test Backend') {
             steps {
                 dir('backend') {  // or wherever your Python code is
-                    sh 'pytest --maxfail=1 --disable-warnings -q'
+                    sh 'pytest'
                 }
             }
         }
