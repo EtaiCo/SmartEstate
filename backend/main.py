@@ -713,6 +713,27 @@ def create_review(
         "rating": new_review.rating,
         "created_at": new_review.created_at
     }
+
+@app.get("/reviews/")
+def get_reviews(db: Session = Depends(get_db)):
+    # Get all reviews from the database
+    reviews = db.query(models.Review).all()
+    
+    # Convert reviews to a list of dictionaries for easier JSON serialization
+    review_list = [
+        {
+            "id": review.id,
+            "user_id": review.user_id,
+            "content": review.content,
+            "rating": review.rating,
+            "created_at": review.created_at.isoformat() if review.created_at else None
+        }
+        for review in reviews
+    ]
+    
+    return review_list
+
+
 @app.get("/ads")
 async def get_ads(db: db_dependency):
     """Get all ads for display on map"""
@@ -746,5 +767,6 @@ async def get_ads(db: db_dependency):
         ad_list.append(ad_dict)
     
     return ad_list
+
 
 

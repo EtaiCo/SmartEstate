@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { options } from "./AdminOptions"; // Assuming you have a file that exports the options
 
 const AdminHomePage = () => {
   const [user, setUser] = useState(null);
@@ -9,39 +10,6 @@ const AdminHomePage = () => {
     // You can validate the session here if needed
     setUser("Admin"); // Replace with actual data from server if needed
   }, []);
-
-  const options = [
-    {
-      title: "Manage Users",
-      description: "View, edit, or delete users",
-      path: "/admin/users",
-    },
-    {
-      title: "Manage Apartments",
-      description: "Edit or delete apartment listings",
-      path: "/admin/listings",
-    },
-    {
-      title: "View Feedback",
-      description: "See user reviews and feedback",
-      path: "/admin/feedback",
-    },
-    {
-      title: "Manage Reviews",
-      description: "Manage user reviews and feedback",
-      path: "/admin/feedback",
-    },
-    {
-      title: "Analytics",
-      description: "View usage statistics and reports",
-      path: "/admin/analytics",
-    },
-    {
-      title: "View the Site",
-      description: "Go back to the main site homepage",
-      path: "/",
-    },
-  ];
 
   return (
     <>

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import UserAnalytics from "./UserAnalytics";
 import ApartmentAnalytics from "./ApartmentAnalytics";
-//import ReviewsAnalytics from "./ReviewsAnalytics";
+import ReviewsAnalytics from "./ReviewsAnalytics";
 
 const AnalyticsDashboard = () => {
   const [selectedView, setSelectedView] = useState("user");
@@ -12,8 +12,8 @@ const AnalyticsDashboard = () => {
         return <UserAnalytics />;
       case "apartment":
         return <ApartmentAnalytics />;
-      /*case "reviews":
-        return <ReviewsAnalytics />;*/
+      case "reviews":
+        return <ReviewsAnalytics />;
       default:
         return <UserAnalytics />;
     }
