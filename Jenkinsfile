@@ -1,30 +1,30 @@
 pipeline {
-    agent any
-
+    agent none
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
-        stage('Test Backend') {
-            steps {
-                dir('backend') {
-                    sh 'pip3 install -r requirements.txt --user'
-                    // Export the environment variable and run tests
-                    sh 'export SKIP_DB_INIT=1 && python3 -m pytest --maxfail=1 --disable-warnings -q tests/'
+        stage('Build') {
+            agent {
+                docker {
+                    image 'python:2-alpine'
                 }
             }
+            steps {
+                sh 'python -m py_compile sources/add2vals.py sources/calc.py'
+            }
         }
-    }
-
-    post {
-        success {
-            echo 'Pipeline completed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed. Please check the logs for details.'
+        stage('Test') {
+            agent {
+                docker {
+                    image 'qnib/pytest'
+                }
+            }
+            steps {
+                sh 'py.test --verbose --junit-xml test-reports/results.xml sources/test_calc.py'
+            }
+            post {
+                always {
+                    junit 'test-reports/results.xml'
+                }
+            }
         }
     }
 }
