@@ -41,17 +41,11 @@ createRoot(document.getElementById("root")).render(
             <Route path="/create-ad" element={<CreateAd />} />
             <Route path="/admin/listings" element={<ManageApartments />} />
             <Route path="/ad/:id" element={<AdDetails />} />
-            {/* Add more routes here as needed */}
-
             <Route
               path="/personal-questionnaire"
               element={<PersonalQuestionnaire />}
             />
             {/* Add more routes here as needed */}
-            <Route
-              path="/personal-questionnaire"
-              element={<PersonalQuestionnaire />}
-            />
           </Route>
         </Routes>
       </BrowserRouter>
