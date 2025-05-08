@@ -768,5 +768,11 @@ async def get_ads(db: db_dependency):
     
     return ad_list
 
+@app.get("/ads/{ad_id}")
+def get_ad(ad_id: int, db: db_dependency):
+    ad = db.query(models.Ad).filter(models.Ad.id == ad_id).first()
+    if not ad:
+        raise HTTPException(status_code=404, detail="Ad not found")
+    return ad
 
 

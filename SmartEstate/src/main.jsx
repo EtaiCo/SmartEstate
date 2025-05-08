@@ -19,6 +19,7 @@ import Updateprofile from "./Components/User/UpdateProfile.jsx";
 import CreateAd from "./Components/User/CreateAd.jsx";
 import ManageApartments from "./Components/Admin/ManageApartments.jsx";
 import AnalyticsDashboard from "./Components/Admin/AnalyticsDashboard.jsx";
+import AdDetails from "./Components/User/AdDetails.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -39,6 +40,8 @@ createRoot(document.getElementById("root")).render(
             <Route path="/update-profile" element={<Updateprofile />} />
             <Route path="/create-ad" element={<CreateAd />} />
             <Route path="/admin/listings" element={<ManageApartments />} />
+            <Route path="/ad/:id" element={<AdDetails />} />
+            {/* Add more routes here as needed */}
 
             <Route
               path="/personal-questionnaire"
