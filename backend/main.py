@@ -108,7 +108,7 @@ class AdCreateSchema(BaseModel):
     has_balcony: Optional[bool] = False
     pets_allowed: Optional[bool] = False
     accessibility: Optional[bool] = False
-    publish_date: Optional[str] = None  # Format: YYYY-MM-DD
+    publish_date: Optional[date] = None  # Format: YYYY-MM-DD
     latitude: float
     longitude: float
 

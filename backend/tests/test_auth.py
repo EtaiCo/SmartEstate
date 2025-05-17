@@ -6,6 +6,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 import sys
 import os
+from datetime import date
+
 
 # Add the parent directory to path so we can import the main app
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -258,3 +260,77 @@ class TestUserAuthentication:
         assert data["first_name"] == update_data["first_name"]
         assert data["last_name"] == update_data["last_name"]
         assert data["email"] == update_data["email"]
+
+
+    def test_update_profile_user_not_found(self, client, test_db):
+        update_data = {
+            "email": "nonexistent@example.com",
+            "first_name": "Ghost",
+            "last_name": "User"
+        }
+        response = client.put("/update-profile/", json=update_data)
+        assert response.status_code == 404
+        assert "User not found" in response.json()["detail"]
+
+    def test_create_ad_success(self, client, test_db):
+        # Simulate login by creating session manually
+        login_data = {
+            "email": "test@example.com",
+            "password": "password123"
+        }
+        client.post("/login/", json=login_data)
+
+        ad_data = {
+            "ad_type": "Rent",
+            "property_type": "Apartment",
+            "address": "123 Test St",
+            "latitude": 32.0853,
+            "longitude": 34.7818,
+            "rooms": 3,
+            "size": 100,
+            "price": 5000,
+            "floor": 2,
+            "has_elevator": True,
+            "has_parking": True,
+            "description": "Nice apartment for rent.",
+            "publisher_name": "Test Publisher",
+            "contact_phone": "0501234567",
+            "has_garden": False,
+            "has_balcony": True,
+            "pets_allowed": True,
+            "accessibility": True,
+            "publish_date": str(date.today())
+        }
+
+        response = client.post("/ads/", json=ad_data)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["address"] == ad_data["address"]
+        assert data["price"] == ad_data["price"]
+
+    def test_create_ad_not_authenticated(self, client, test_db):
+        ad_data = {
+            "ad_type": "Rent",
+            "property_type": "Apartment",
+            "address": "123 Test St",
+            "latitude": 32.0853,
+            "longitude": 34.7818,
+            "rooms": 3,
+            "size": 100,
+            "price": 5000,
+            "floor": 2,
+            "has_elevator": True,
+            "has_parking": True,
+            "description": "Nice apartment for rent.",
+            "publisher_name": "Test Publisher",
+            "contact_phone": "0501234567",
+            "has_garden": False,
+            "has_balcony": True,
+            "pets_allowed": True,
+            "accessibility": True,
+            "publish_date": str(date.today())
+        }
+
+        response = client.post("/ads/", json=ad_data)
+        assert response.status_code == 401
+        assert "Not authenticated" in response.json()["detail"]
