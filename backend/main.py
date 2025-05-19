@@ -37,7 +37,34 @@ app.add_middleware(
 
 #session for saveing details
 app.add_middleware(SessionMiddleware, secret_key = "your-super-secret-key", max_age = 1800)
-models.Base.metadata.create_all(bind = engine)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Add session middleware
+app.add_middleware(
+    SessionMiddleware,
+    secret_key="your-secret-key-here"  # Change this in production
+)
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+    
+db_dependency = Annotated[Session, Depends(get_db)]
+
+# Only create tables if we're not in a test environment
+if not os.environ.get("TESTING"):
+    models.Base.metadata.create_all(bind = engine)
 
 geolocator = Nominatim(user_agent="smartestate-app")
 
@@ -118,16 +145,6 @@ class AdCreateSchema(BaseModel):
 class ReviewCreate(BaseModel):
     content: str
     rating: int
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-    
-db_dependency = Annotated[Session, Depends(get_db)]
-
 
 @app.post("/users/")
 async def create_user(user: UserBase, db: db_dependency):
