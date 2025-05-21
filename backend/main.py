@@ -35,23 +35,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-#session for saveing details
-app.add_middleware(SessionMiddleware, secret_key = "your-super-secret-key", max_age = 1800)
-
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Add session middleware
-app.add_middleware(
-    SessionMiddleware,
-    secret_key="your-secret-key-here"  # Change this in production
-)
 
 def get_db():
     db = SessionLocal()
@@ -603,10 +586,10 @@ async def get_all_users(request: Request, db: Session = Depends(get_db)):
 
 @app.post("/ads/")
 def create_ad(request: Request, ad_data: AdCreateSchema, db: db_dependency):
+    print("Session content:", request.session.items())
     user = request.session.get("user")
     if not user:
         raise HTTPException(status_code=401, detail="Not authenticated")
-
     db_user = db.query(models.Users).filter(models.Users.email == user["email"]).first()
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")

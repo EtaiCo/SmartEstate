@@ -278,8 +278,9 @@ class TestUserAuthentication:
             "email": "test@example.com",
             "password": "password123"
         }
-        client.post("/login/", json=login_data)
-
+        
+        response = client.post("/login/", json=login_data)
+        print("Login response:", response.cookies)
         ad_data = {
             "ad_type": "Rent",
             "property_type": "Apartment",
