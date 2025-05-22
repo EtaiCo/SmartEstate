@@ -20,6 +20,7 @@ import CreateAd from "./Components/User/CreateAd.jsx";
 import ManageApartments from "./Components/Admin/ManageApartments.jsx";
 import AnalyticsDashboard from "./Components/Admin/AnalyticsDashboard.jsx";
 import AdDetails from "./Components/User/AdDetails.jsx";
+import LandingPage from "./Components/LandingPage";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -29,7 +30,8 @@ createRoot(document.getElementById("root")).render(
         <Routes>
           {/* Wrap all routes in a layout */}
           <Route element={<Layout />}>
-            <Route path="/" element={<App />} />
+            <Route path="/" element={< LandingPage/>} />
+            <Route path="/app" element={<App />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<UserProfile />} />
