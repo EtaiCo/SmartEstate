@@ -38,7 +38,7 @@ const NavBar = () => {
 
           {/* Center: Nav Links */}
           <Nav className="mx-auto gap-4">
-            <Nav.Link as={Link} to="/about" className="nav-center-link">מי אנחנו?</Nav.Link>
+            <Nav.Link as={Link} to="/about" className="nav-center-link">?מי אנחנו</Nav.Link>
             <Nav.Link as={Link} to="/advisors" className="nav-center-link">היועצים שלנו</Nav.Link>
             <Nav.Link as={Link} to="/faq" className="nav-center-link">שאלות נפוצות</Nav.Link>
           </Nav>
