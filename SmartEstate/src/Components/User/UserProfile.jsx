@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import axios from "axios";
-import ReviewForm from "./ReviewForm"; // Import the new component
+import ReviewModal from "./ReviewModal"; // Import the new component
 
 const UserProfile = () => {
   const { user } = useAuth();
@@ -48,7 +48,7 @@ const UserProfile = () => {
     return (
       <div className="container mt-5">
         <h2>אנא התחבר כדי לצפות בפרופיל שלך</h2>
-        <Link to="/login" className="btn btn-primary">
+        <Link to="/login" className="btn btn-warning">
           התחברות
         </Link>
       </div>
@@ -70,32 +70,16 @@ const UserProfile = () => {
                 <p>
                   <strong>אימייל:</strong> {user.email}
                 </p>
-                <Link
-                  to="/update-profile"
-                  className="btn btn-outline-primary w-100 mb-2"
-                >
+                <Link to="/update-profile" className="btn btn-outline-warning rounded-pill w-100 mb-2">
                   עריכת פרטים
                 </Link>
-                <Link
-                  to="/change-password"
-                  className="btn btn-outline-secondary w-100 mb-2"
-                >
+                <Link to="/change-password" className="btn btn-outline-warning rounded-pill w-100 mb-2">
                   שינוי סיסמה
                 </Link>
-                <Link
-                  to="/create-ad"
-                  className="btn btn-outline-secondary w-100 mb-2"
-                >
+                <Link to="/create-ad" className="btn btn-outline-warning rounded-pill w-100 mb-2">
                   פרסום מודעת מכירה/השכרה
                 </Link>
-                <Link
-                  to="/personal-questionnaire"
-                  className="btn btn-primary w-100"
-                  style={{
-                    background: "linear-gradient(45deg, #2193b0, #6dd5ed)",
-                    border: "none",
-                  }}
-                >
+                <Link to="/personal-questionnaire" className="btn btn-warning rounded-pill w-100">
                   מילוי שאלון העדפות
                 </Link>
               </div>
@@ -157,14 +141,7 @@ const UserProfile = () => {
                 ) : (
                   <div className="text-center">
                     <p>עדיין לא מילאת את שאלון ההעדפות</p>
-                    <Link
-                      to="/personal-questionnaire"
-                      className="btn btn-primary"
-                      style={{
-                        background: "linear-gradient(45deg, #2193b0, #6dd5ed)",
-                        border: "none",
-                      }}
-                    >
+                    <Link to="/personal-questionnaire" className="btn btn-warning">
                       מלא שאלון עכשיו
                     </Link>
                   </div>
@@ -195,12 +172,13 @@ const UserProfile = () => {
             </div>
           </div>
         </div>
-        {/* Reviews - Using the new component */}
+
+        {/* Reviews */}
         <div className="row">
-          <div className="col-12 mb-4">
-            <ReviewForm />
-          </div>
-        </div>
+  <div className="col-12 mb-4">
+    <ReviewModal />
+  </div>
+</div>
       </div>
     </>
   );

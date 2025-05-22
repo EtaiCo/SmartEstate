@@ -31,8 +31,8 @@ const LandingPage = () => {
     בונה עבורך חווית חיפוש דירה מותאמת אישית 
     שמבינה אותך ואת הסביבה שתרצה לחיות בה
   </p>
-  <div className="d-flex gap-3 mt-4">
-    <Button variant="warning" size="lg" href="/app">
+  <div className="d-flex gap-3 mt-4 ">
+    <Button className="rounded-pill nav-btn me-2" variant="warning" size="lg" href="/app">
       !יאללה חפש
     </Button>
   </div>

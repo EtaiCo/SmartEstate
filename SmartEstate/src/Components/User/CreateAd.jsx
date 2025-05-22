@@ -97,216 +97,153 @@ const CreateAd = () => {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="p-4 shadow rounded bg-white"
-      style={{ maxWidth: "700px", margin: "50px auto" }}
-      dir="rtl"
+  <div className="container mt-5" dir="rtl" style={{ maxWidth: "700px" }}>
+    <div
+      className="bg-white shadow p-4 rounded-4 border border-warning"
+      style={{ borderTop: "5px solid #ffc107" }}
     >
-      <h2 className="text-center mb-4">פרסום מודעה חדשה</h2>
+      <h4 className="text-center mb-4 text-warning fw-bold">פרסום מודעה חדשה</h4>
 
-      {/* סוג מודעה */}
-      <div className="mb-3">
-        <Form.Label>סוג מודעה</Form.Label>
-        <select
-          name="ad_type"
-          className="form-select"
-          value={formData.ad_type}
-          onChange={handleChange}
-          required
-        >
-          <option value="">בחר...</option>
-          <option value="מכירה">מכירה</option>
-          <option value="השכרה">השכרה</option>
-        </select>
-      </div>
+      <form onSubmit={handleSubmit}>
+        {/* סוג מודעה */}
+        <div className="mb-3">
+          <Form.Label>סוג מודעה</Form.Label>
+          <Form.Select name="ad_type" value={formData.ad_type} onChange={handleChange} required>
+            <option value="">בחר...</option>
+            <option value="מכירה">מכירה</option>
+            <option value="השכרה">השכרה</option>
+          </Form.Select>
+        </div>
 
-      {/* סוג נכס */}
-      <div className="mb-3">
-        <Form.Label>סוג נכס</Form.Label>
-        <select
-          name="property_type"
-          className="form-select"
-          value={formData.property_type}
-          onChange={handleChange}
-          required
-        >
-          <option value="">בחר סוג נכס</option>
-          <option value="apartment">דירה</option>
-          <option value="house">בית פרטי</option>
-          <option value="penthouse">פנטהאוס</option>
-          <option value="studio">סטודיו</option>
-        </select>
-      </div>
+        {/* סוג נכס */}
+        <div className="mb-3">
+          <Form.Label>סוג נכס</Form.Label>
+          <Form.Select name="property_type" value={formData.property_type} onChange={handleChange} required>
+            <option value="">בחר סוג נכס</option>
+            <option value="apartment">דירה</option>
+            <option value="house">בית פרטי</option>
+            <option value="penthouse">פנטהאוס</option>
+            <option value="studio">סטודיו</option>
+          </Form.Select>
+        </div>
 
-      {/* כתובת + חיפוש */}
-      <div className="mb-3">
-        <Form.Label>
-          כתובת <span style={{ color: "red" }}>*</span>
-        </Form.Label>
-        <SimpleSearchControl onSelect={handleAddressSelect} />
-        {formData.address && (
-          <div className="mt-2 alert alert-success">
-            כתובת שנבחרה: {formData.address}
-          </div>
-        )}
-      </div>
+        {/* כתובת + חיפוש */}
+        <div className="mb-3">
+          <Form.Label>
+            כתובת <span className="text-danger">*</span>
+          </Form.Label>
+          <SimpleSearchControl onSelect={handleAddressSelect} />
+          {formData.address && (
+            <div className="mt-2 alert alert-success text-end">
+              כתובת שנבחרה: {formData.address}
+            </div>
+          )}
+        </div>
 
-      {/* מספר חדרים */}
-      <div className="mb-3">
-        <Form.Label>מספר חדרים</Form.Label>
-        <select
-          name="rooms"
-          className="form-select"
-          value={formData.rooms}
-          onChange={handleChange}
-          required
-        >
-          <option value="">בחר מספר חדרים</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5+">5+</option>
-        </select>
-      </div>
+        {/* מספר חדרים */}
+        <div className="mb-3">
+          <Form.Label>מספר חדרים</Form.Label>
+          <Form.Select name="rooms" value={formData.rooms} onChange={handleChange} required>
+            <option value="">בחר מספר חדרים</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5+">5+</option>
+          </Form.Select>
+        </div>
 
-      {/* גודל */}
-      <div className="mb-3">
-        <Form.Label>גודל (במ"ר)</Form.Label>
-        <Form.Control
-          type="number"
-          name="size"
-          min="0"
-          value={formData.size}
-          onChange={handleChange}
-          required
-        />
-      </div>
+        {/* גודל */}
+        <div className="mb-3">
+          <Form.Label>גודל (במ"ר)</Form.Label>
+          <Form.Control
+            type="number"
+            name="size"
+            value={formData.size}
+            onChange={handleChange}
+            required
+            className="text-end"
+          />
+        </div>
 
-      {/* מחיר */}
-      <div className="mb-3">
-        <Form.Label>מחיר (בש"ח)</Form.Label>
-        <Form.Control
-          type="number"
-          name="price"
-          min="0"
-          value={formData.price}
-          onChange={handleChange}
-          required
-        />
-      </div>
+        {/* מחיר */}
+        <div className="mb-3">
+          <Form.Label>מחיר (בש"ח)</Form.Label>
+          <Form.Control
+            type="number"
+            name="price"
+            value={formData.price}
+            onChange={handleChange}
+            required
+            className="text-end"
+          />
+        </div>
 
-      {/* קומה */}
-      <div className="mb-3">
-        <Form.Label>קומה</Form.Label>
-        <Form.Control
-          type="number"
-          name="floor"
-          min="0"
-          value={formData.floor}
-          onChange={handleChange}
-          required
-        />
-      </div>
+        {/* קומה */}
+        <div className="mb-3">
+          <Form.Label>קומה</Form.Label>
+          <Form.Control
+            type="number"
+            name="floor"
+            value={formData.floor}
+            onChange={handleChange}
+            required
+            className="text-end"
+          />
+        </div>
 
-      {/* אפשרויות נוספות */}
-      <div className="mb-3">
-        <Form.Label>תוספות</Form.Label>
-        <div className="row">
-          <div className="col-md-4">
-            <Form.Check
-              type="checkbox"
-              label="חניה"
-              name="has_parking"
-              checked={formData.has_parking}
-              onChange={handleChange}
-            />
-            <Form.Check
-              type="checkbox"
-              label="מעלית"
-              name="has_elevator"
-              checked={formData.has_elevator}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="col-md-4">
-            <Form.Check
-              type="checkbox"
-              label="מרפסת"
-              name="has_balcony"
-              checked={formData.has_balcony}
-              onChange={handleChange}
-            />
-            <Form.Check
-              type="checkbox"
-              label="גינה"
-              name="has_garden"
-              checked={formData.has_garden}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="col-md-4">
-            <Form.Check
-              type="checkbox"
-              label="חיות מחמד מותרות"
-              name="pets_allowed"
-              checked={formData.pets_allowed}
-              onChange={handleChange}
-            />
-            <Form.Check
-              type="checkbox"
-              label="נגישות לנכים"
-              name="accessibility"
-              checked={formData.accessibility}
-              onChange={handleChange}
-            />
+        {/* תוספות */}
+        <div className="mb-3">
+          <Form.Label>תוספות</Form.Label>
+          <div className="row">
+            <div className="col-md-4">
+              <Form.Check label="חניה" name="has_parking" type="checkbox" checked={formData.has_parking} onChange={handleChange} />
+              <Form.Check label="מעלית" name="has_elevator" type="checkbox" checked={formData.has_elevator} onChange={handleChange} />
+            </div>
+            <div className="col-md-4">
+              <Form.Check label="מרפסת" name="has_balcony" type="checkbox" checked={formData.has_balcony} onChange={handleChange} />
+              <Form.Check label="גינה" name="has_garden" type="checkbox" checked={formData.has_garden} onChange={handleChange} />
+            </div>
+            <div className="col-md-4">
+              <Form.Check label="חיות מחמד מותרות" name="pets_allowed" type="checkbox" checked={formData.pets_allowed} onChange={handleChange} />
+              <Form.Check label="נגישות לנכים" name="accessibility" type="checkbox" checked={formData.accessibility} onChange={handleChange} />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* שם המפרסם */}
-      <div className="mb-3">
-        <Form.Label>שם המפרסם</Form.Label>
-        <Form.Control
-          type="text"
-          name="publisher_name"
-          value={formData.publisher_name}
-          onChange={handleChange}
-          required
-        />
-      </div>
+        {/* שם המפרסם */}
+        <div className="mb-3">
+          <Form.Label>שם המפרסם</Form.Label>
+          <Form.Control type="text" name="publisher_name" value={formData.publisher_name} onChange={handleChange} required />
+        </div>
 
-      {/* טלפון ליצירת קשר */}
-      <div className="mb-3">
-        <Form.Label>טלפון ליצירת קשר</Form.Label>
-        <Form.Control
-          type="text"
-          name="contact_phone"
-          value={formData.contact_phone}
-          onChange={handleChange}
-          required
-        />
-      </div>
+        {/* טלפון */}
+        <div className="mb-3">
+          <Form.Label>טלפון ליצירת קשר</Form.Label>
+          <Form.Control type="text" name="contact_phone" value={formData.contact_phone} onChange={handleChange} required />
+        </div>
 
-      {/* תיאור */}
-      <div className="mb-3">
-        <Form.Label>תיאור</Form.Label>
-        <Form.Control
-          as="textarea"
-          name="description"
-          rows={4}
-          value={formData.description}
-          onChange={handleChange}
-        />
-      </div>
+        {/* תיאור */}
+        <div className="mb-3">
+          <Form.Label>תיאור</Form.Label>
+          <Form.Control as="textarea" name="description" rows={4} value={formData.description} onChange={handleChange} className="text-end" />
+        </div>
 
-      {/* כפתור שליחה */}
-      <button type="submit" className="btn btn-primary w-100 mt-3">
-        פרסם מודעה
-      </button>
-    </form>
-  );
+        {/* כפתור שליחה */}
+        <div className="text-center mt-4">
+          <button
+            type="submit"
+            className="btn btn-outline-warning rounded-pill px-5 fw-semibold"
+            style={{ fontSize: "1rem" }}
+          >
+            פרסם מודעה
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+);
+
 };
 
 export default CreateAd;
