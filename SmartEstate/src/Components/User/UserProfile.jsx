@@ -96,16 +96,12 @@ const UserProfile = () => {
                     <div className="d-flex justify-content-between align-items-center mb-3">
                       <h5 className="card-title mb-0">העדפות שלך</h5>
                       <Link
-                        to="/personal-questionnaire"
-                        className="btn btn-outline-primary"
-                        style={{
-                          background: "linear-gradient(45deg, #2193b0, #6dd5ed)",
-                          border: "none",
-                          color: "white",
-                        }}
-                      >
-                        עדכן העדפות
-                      </Link>
+                            to="/personal-questionnaire"
+                            className="btn btn-warning rounded-pill w-100"
+                          >
+                            עדכן העדפות
+                          </Link>
+
                     </div>
                     <p>
                       <strong>למי מחפשים:</strong> {preferences.who || "לא נבחר"}
