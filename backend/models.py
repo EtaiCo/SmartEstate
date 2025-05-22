@@ -18,18 +18,23 @@ class UserPreferences(Base):
 
     ID = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('Users.ID'), nullable=False)
-    property_type = Column(String, nullable=False)
-    budget = Column(Integer, nullable=False)
-    location = Column(String, nullable=False)
-    rooms = Column(String, nullable=False)
-    size = Column(Integer, nullable=False)
-    parking = Column(Boolean, default=False)
-    elevator = Column(Boolean, default=False)
-    balcony = Column(Boolean, default=False)
-    garden = Column(Boolean, default=False)
-    pets_allowed = Column(Boolean, default=False)
-    accessibility = Column(Boolean, default=False)
-    additional_notes = Column(Text)
+    who = Column(String, nullable=True)
+    house_type = Column(String, nullable=True)
+    features = Column(Text, nullable=True)  # Store JSON string
+    important_layers = Column(Text, nullable=True)  # Store JSON string
+    location = Column(String, nullable=True)
+    budget_min = Column(Integer, nullable=True)
+    budget_max = Column(Integer, nullable=True)
+    rooms = Column(String, nullable=True)
+    property_type = Column(String, nullable=True)
+    size = Column(Integer, nullable=True)
+    parking = Column(Boolean, default=False, nullable=True)
+    elevator = Column(Boolean, default=False, nullable=True)
+    balcony = Column(Boolean, default=False, nullable=True)
+    garden = Column(Boolean, default=False, nullable=True)
+    pets_allowed = Column(Boolean, default=False, nullable=True)
+    accessibility = Column(Boolean, default=False, nullable=True)
+    additional_notes = Column(Text, nullable=True)
 
 class OSMData(Base):
     __tablename__ = 'osm_data'
