@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Container, Nav, Navbar, Button, NavDropdown, Modal } from "react-bootstrap";
+import {
+  Container,
+  Nav,
+  Navbar,
+  Button,
+  NavDropdown,
+  Modal,
+} from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUserPlus, FaSignInAlt, FaPlus, FaSearch } from "react-icons/fa";
 import { useAuth } from "./User/AuthContext";
@@ -38,38 +45,72 @@ const NavBar = () => {
 
           {/* Center: Nav Links */}
           <Nav className="mx-auto gap-4">
-            <Nav.Link as={Link} to="/about" className="nav-center-link">?מי אנחנו</Nav.Link>
-            <Nav.Link as={Link} to="/advisors" className="nav-center-link">היועצים שלנו</Nav.Link>
-            <Nav.Link as={Link} to="/faq" className="nav-center-link">שאלות נפוצות</Nav.Link>
+            <Nav.Link as={Link} to="/about" className="nav-center-link">
+              ?מי אנחנו
+            </Nav.Link>
+            <Nav.Link as={Link} to="/advisors" className="nav-center-link">
+              היועצים שלנו
+            </Nav.Link>
+            <Nav.Link as={Link} to="/faq" className="nav-center-link">
+              שאלות נפוצות
+            </Nav.Link>
           </Nav>
 
           {/* Left: Action Buttons */}
           <div className="d-flex gap-2 me-auto">
             {user ? (
               <>
-                <Button as={Link} to="/app" variant="warning" className="rounded-pill nav-btn me-2">
+                <Button
+                  as={Link}
+                  to="/app"
+                  variant="warning"
+                  className="rounded-pill nav-btn me-2"
+                >
                   לחיפוש <FaSearch className="ms-2" />
                 </Button>
 
-                <Button as={Link} to="/create-ad" variant="dark" className="rounded-pill nav-btn me-2">
+                <Button
+                  as={Link}
+                  to="/create-ad"
+                  variant="dark"
+                  className="rounded-pill nav-btn me-2"
+                >
                   הוסף מודעה <FaPlus className="ms-2" />
                 </Button>
 
-                <NavDropdown title={`שלום, ${user.first_name}`} className="user-dropdown" align="end">
-                  <NavDropdown.Item as={Link} to="/profile">הפרופיל שלי</NavDropdown.Item>
+                <NavDropdown
+                  title={`שלום, ${user.first_name}`}
+                  className="user-dropdown"
+                  align="end"
+                >
+                  <NavDropdown.Item as={Link} to="/profile">
+                    הפרופיל שלי
+                  </NavDropdown.Item>
                   {user.is_admin && (
-                    <NavDropdown.Item as={Link} to="/adminHomePage">ניהול</NavDropdown.Item>
+                    <NavDropdown.Item as={Link} to="/adminHomePage">
+                      ניהול
+                    </NavDropdown.Item>
                   )}
                   <NavDropdown.Divider />
-                  <NavDropdown.Item onClick={handleLogout}>התנתק</NavDropdown.Item>
+                  <NavDropdown.Item onClick={handleLogout}>
+                    התנתק
+                  </NavDropdown.Item>
                 </NavDropdown>
               </>
             ) : (
               <>
-                <Button variant="warning" className="rounded-pill nav-btn" onClick={() => setShowLogin(true)}>
+                <Button
+                  variant="warning"
+                  className="rounded-pill nav-btn"
+                  onClick={() => setShowLogin(true)}
+                >
                   התחברות <FaSignInAlt className="ms-2" />
                 </Button>
-                <Button variant="outline-dark" className="rounded-pill nav-btn" onClick={() => setShowRegister(true)}>
+                <Button
+                  variant="outline-dark"
+                  className="rounded-pill nav-btn"
+                  onClick={() => setShowRegister(true)}
+                >
                   הרשמה <FaUserPlus className="ms-2" />
                 </Button>
               </>
