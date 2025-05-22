@@ -7,7 +7,7 @@ import ReviewForm from "./ReviewForm"; // Import the new component
 const UserProfile = () => {
   const { user } = useAuth();
   const [preferences, setPreferences] = useState(null);
-  const [favorites, setFavorites] = useState([
+  const [favorites] = useState([
     { id: 1, title: "דירה בתל אביב, 3 חדרים", address: "תל אביב" },
     { id: 2, title: "דירה בירושלים, 4 חדרים", address: "ירושלים" },
     { id: 3, title: "דירה בחיפה, 2 חדרים", address: "חיפה" },
@@ -32,6 +32,17 @@ const UserProfile = () => {
       fetchPreferences();
     }
   }, [user]);
+
+  const hasPreferences =
+    preferences &&
+    (preferences.who ||
+      preferences.houseType ||
+      preferences.rooms ||
+      (preferences.features && preferences.features.length > 0) ||
+      (preferences.importantLayers && preferences.importantLayers.length > 0) ||
+      preferences.location ||
+      preferences.budgetMin ||
+      preferences.budgetMax);
 
   if (!user) {
     return (
@@ -96,7 +107,7 @@ const UserProfile = () => {
             <div className="card h-100">
               <div className="card-body">
                 <h5 className="card-title">העדפות שלך</h5>
-                {preferences ? (
+                {hasPreferences ? (
                   <div className="preferences-list">
                     <div className="d-flex justify-content-between align-items-center mb-3">
                       <h5 className="card-title mb-0">העדפות שלך</h5>
@@ -104,8 +115,7 @@ const UserProfile = () => {
                         to="/personal-questionnaire"
                         className="btn btn-outline-primary"
                         style={{
-                          background:
-                            "linear-gradient(45deg, #2193b0, #6dd5ed)",
+                          background: "linear-gradient(45deg, #2193b0, #6dd5ed)",
                           border: "none",
                           color: "white",
                         }}
@@ -114,37 +124,35 @@ const UserProfile = () => {
                       </Link>
                     </div>
                     <p>
-                      <strong>סוג נכס:</strong> {preferences.propertyType}
+                      <strong>למי מחפשים:</strong> {preferences.who || "לא נבחר"}
                     </p>
                     <p>
-                      <strong>תקציב:</strong> {preferences.budget} ₪
+                      <strong>סוג בית:</strong> {preferences.houseType || "לא נבחר"}
                     </p>
                     <p>
-                      <strong>מיקום מועדף:</strong> {preferences.location}
+                      <strong>מספר חדרים:</strong> {preferences.rooms || "לא נבחר"}
                     </p>
                     <p>
-                      <strong>מספר חדרים:</strong> {preferences.rooms}
+                      <strong>תוספות:</strong>{" "}
+                      {preferences.features && preferences.features.length > 0
+                        ? preferences.features.join(", ")
+                        : "אין"}
                     </p>
                     <p>
-                      <strong>גודל:</strong> {preferences.size} מ"ר
+                      <strong>מה חשוב שיהיה קרוב:</strong>{" "}
+                      {preferences.importantLayers && preferences.importantLayers.length > 0
+                        ? preferences.importantLayers.join(", ")
+                        : "לא נבחר"}
                     </p>
-                    <div className="mt-3">
-                      <h6>דרישות נוספות:</h6>
-                      <ul className="list-unstyled">
-                        {preferences.parking && <li>✓ חניה</li>}
-                        {preferences.elevator && <li>✓ מעלית</li>}
-                        {preferences.balcony && <li>✓ מרפסת</li>}
-                        {preferences.garden && <li>✓ גינה</li>}
-                        {preferences.petsAllowed && <li>✓ מותר חיות מחמד</li>}
-                        {preferences.accessibility && <li>✓ נגישות לנכים</li>}
-                      </ul>
-                    </div>
-                    {preferences.additionalNotes && (
-                      <div className="mt-3">
-                        <h6>הערות נוספות:</h6>
-                        <p>{preferences.additionalNotes}</p>
-                      </div>
-                    )}
+                    <p>
+                      <strong>מיקום:</strong> {preferences.location || "לא נבחר"}
+                    </p>
+                    <p>
+                      <strong>תקציב:</strong>{" "}
+                      {preferences.budgetMin && preferences.budgetMax
+                        ? `${preferences.budgetMin} - ${preferences.budgetMax} ₪`
+                        : "לא נבחר"}
+                    </p>
                   </div>
                 ) : (
                   <div className="text-center">

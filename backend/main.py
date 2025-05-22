@@ -11,6 +11,7 @@ import json
 import requests
 from datetime import date
 import os
+from sqlalchemy import JSON  # הוסף למעלה אם יש לך SQLAlchemy 1.3+ (אחרת נשתמש ב-Text)
 
 
 
@@ -74,18 +75,14 @@ class UpdateProfileRequest(BaseModel):
     email: EmailStr
 
 class UserPreferencesRequest(BaseModel):
-    propertyType: str
-    budget: int
-    location: str
-    rooms: str
-    size: int
-    parking: bool = False
-    elevator: bool = False
-    balcony: bool = False
-    garden: bool = False
-    petsAllowed: bool = False
-    accessibility: bool = False
-    additionalNotes: str = None
+    who: Optional[str] = None
+    houseType: Optional[str] = None
+    rooms: Optional[str] = None
+    features: Optional[List[str]] = []
+    importantLayers: Optional[List[str]] = []
+    location: Optional[str] = None
+    budgetMin: Optional[int] = None
+    budgetMax: Optional[int] = None
 
 class MapLayerRequest(BaseModel):
     layers: List[str]  # List of amenity types to show (e.g., ['school', 'kindergarten'])
@@ -250,41 +247,30 @@ async def save_user_preferences(request: Request, preferences: UserPreferencesRe
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # Check if preferences already exist for this user
     existing_preferences = db.query(models.UserPreferences).filter(
         models.UserPreferences.user_id == db_user.ID
     ).first()
 
     if existing_preferences:
-        # Update existing preferences
-        existing_preferences.property_type = preferences.propertyType
-        existing_preferences.budget = preferences.budget
+        existing_preferences.who = preferences.who
+        existing_preferences.house_type = preferences.houseType
+        existing_preferences.features = json.dumps(preferences.features)
+        existing_preferences.important_layers = json.dumps(preferences.importantLayers)
         existing_preferences.location = preferences.location
+        existing_preferences.budget_min = preferences.budgetMin
+        existing_preferences.budget_max = preferences.budgetMax
         existing_preferences.rooms = preferences.rooms
-        existing_preferences.size = preferences.size
-        existing_preferences.parking = preferences.parking
-        existing_preferences.elevator = preferences.elevator
-        existing_preferences.balcony = preferences.balcony
-        existing_preferences.garden = preferences.garden
-        existing_preferences.pets_allowed = preferences.petsAllowed
-        existing_preferences.accessibility = preferences.accessibility
-        existing_preferences.additional_notes = preferences.additionalNotes
     else:
-        # Create new preferences
         new_preferences = models.UserPreferences(
             user_id=db_user.ID,
-            property_type=preferences.propertyType,
-            budget=preferences.budget,
+            who=preferences.who,
+            house_type=preferences.houseType,
+            features=json.dumps(preferences.features),
+            important_layers=json.dumps(preferences.importantLayers),
             location=preferences.location,
+            budget_min=preferences.budgetMin,
+            budget_max=preferences.budgetMax,
             rooms=preferences.rooms,
-            size=preferences.size,
-            parking=preferences.parking,
-            elevator=preferences.elevator,
-            balcony=preferences.balcony,
-            garden=preferences.garden,
-            pets_allowed=preferences.petsAllowed,
-            accessibility=preferences.accessibility,
-            additional_notes=preferences.additionalNotes
         )
         db.add(new_preferences)
 
@@ -309,18 +295,14 @@ async def get_user_preferences(request: Request, db: db_dependency):
         raise HTTPException(status_code=404, detail="Preferences not found")
 
     return {
-        "propertyType": preferences.property_type,
-        "budget": preferences.budget,
+        "who": preferences.who,
+        "houseType": preferences.house_type,
+        "features": json.loads(preferences.features) if preferences.features else [],
+        "importantLayers": json.loads(preferences.important_layers) if preferences.important_layers else [],
         "location": preferences.location,
+        "budgetMin": preferences.budget_min,
+        "budgetMax": preferences.budget_max,
         "rooms": preferences.rooms,
-        "size": preferences.size,
-        "parking": preferences.parking,
-        "elevator": preferences.elevator,
-        "balcony": preferences.balcony,
-        "garden": preferences.garden,
-        "petsAllowed": preferences.pets_allowed,
-        "accessibility": preferences.accessibility,
-        "additionalNotes": preferences.additional_notes
     }
 
 @app.get("/admin/analytics/users")
