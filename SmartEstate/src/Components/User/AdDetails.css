@@ -1,0 +1,55 @@
+.feature {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.feature-label {
+  color: #000;
+  font-weight: 600;
+  margin-inline-end: 10px;
+}
+
+.feature-box {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #ffc107;
+  border-radius: 6px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feature-box.checked {
+  background: #ffc107;
+}
+
+.check-icon {
+  color: #000;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.feature-col-fix {
+  padding-right: 0 !important;
+}
+
+.feature-list-wrap {
+  width: 100%;
+  max-width: 170px;
+  padding-right: 8px;
+}
+
+.big-info {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #212529;
+}
+
+.mid-info {
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: #212529;
+}
