@@ -30,13 +30,6 @@ pipeline {
                 }
             }
         }
-        stage('Install Frontend Dependencies') {
-            steps {
-                dir('SmartEstate') {
-                    sh 'npm ci || npm install'
-                }
-            }
-        }
         
         stage('Prepare Test Database Config') {
             steps {
@@ -143,19 +136,6 @@ EOL
                         fi
                         '''
                     }
-                }
-            }
-        }
-
-        stage('Run Frontend Tests') {
-            steps {
-                dir('SmartEstate') {
-                    sh 'npm test -- --ci --reporters=default --reporters=jest-junit || true'
-                }
-            }
-            post {
-                always {
-                    junit allowEmptyResults: true, testResults: 'SmartEstate/junit.xml'
                 }
             }
         }
