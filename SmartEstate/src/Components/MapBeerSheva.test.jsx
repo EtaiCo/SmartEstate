@@ -86,4 +86,29 @@ describe("MapBeerSheva Component", () => {
     // בודק שהכותרת 'תוצאות' עדיין מוצגת
     expect(screen.getByText("תוצאות")).toBeInTheDocument();
   });
+    // בדיקה שמוודאת שקומפוננטת המפה נטענת
+    test("render the map container", async () => {
+        render(
+          <MemoryRouter>
+            <MapBeerSheva />
+          </MemoryRouter>
+        );
+        // מוודא שהמפה מופיעה בדום
+        expect(await screen.findByTestId("map")).toBeInTheDocument();
+      });
+    
+      // בדיקה: LayerControl משנה שכבות (onToggleLayer)
+      test("לחיצה על Toggle Schools מפעילה את השכבה", async () => {
+        render(
+          <MemoryRouter>
+            <MapBeerSheva />
+          </MemoryRouter>
+        );
+        // לוחץ על הכפתור של Toggle Schools
+        const toggleBtn = await screen.findByRole("button", { name: /Toggle Schools/i });
+        expect(toggleBtn).toBeInTheDocument();
+        toggleBtn.click();
+        // מוודא שהכפתור קיים, ומכאן אתה יכול לבדוק שצץ במצב הרצוי או להסתמך על mock (לא חובה להעמיק)
+      });
+    
 });

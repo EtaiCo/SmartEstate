@@ -27,4 +27,15 @@ describe("PersonalQuestionnaire", () => {
     render(<PersonalQuestionnaire />);
     expect(screen.getByRole("button", { name: /תן לי עוד אחת!/ })).toBeInTheDocument();
   });
+  // בדיקה 1: בודק שהרדיו הראשון (לזוג בתחילת הדרך) קיים בדף
+  test("מציג את אופציית 'זוג בתחילת הדרך'", () => {
+    render(<PersonalQuestionnaire />);
+    expect(screen.getByLabelText(/זוג בתחילת הדרך/)).toBeInTheDocument();
+  });
+
+  // בדיקה 2: בודק שכפתור 'שאלה קודמת' לא מופיע בשלב הראשון
+  test("לא מציג את כפתור 'שאלה קודמת' בשלב הראשון", () => {
+    render(<PersonalQuestionnaire />);
+    expect(screen.queryByRole("button", { name: /שאלה קודמת/ })).not.toBeInTheDocument();
+  });
 });

@@ -30,4 +30,32 @@ describe("LandingPage", () => {
     render(<LandingPage />);
     expect(screen.getByText(/בונה עבורך חווית חיפוש דירה מותאמת אישית/)).toBeInTheDocument();
   });
+
+  describe("LandingPage", () => {
+    test("מציג את כפתור יאללה חפש", () => {
+      render(<LandingPage />);
+      expect(screen.getByRole("button", { name: /!יאללה חפש/ })).toBeInTheDocument();
+    });
+  
+    test("מכיל את הטקסט של הפסקה", () => {
+      render(<LandingPage />);
+      expect(screen.getByText(/בונה עבורך חווית חיפוש דירה מותאמת אישית/)).toBeInTheDocument();
+    });
+  
+    // בדיקה 1: שהכותרת הראשית מופיעה
+    test("מציג את הכותרת הראשית", () => {
+      render(<LandingPage />);
+      expect(screen.getByRole("heading", { name: /הגיע הזמן/ })).toBeInTheDocument();
+      expect(screen.getByText(/שהחיפוש יתאים את עצמו אליך/)).toBeInTheDocument();
+    });
+  
+    // בדיקה 2: שהאימג' הראשי מופיע
+    test("מכיל תמונה עם alt מתאים", () => {
+      render(<LandingPage />);
+      const img = screen.getByAltText(/SmartEstate visual path/i);
+      expect(img).toBeInTheDocument();
+      expect(img).toHaveAttribute("src", "landing-illustration.png");
+    });
+  });
+  
 });
