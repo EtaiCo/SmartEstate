@@ -232,6 +232,14 @@
   font-size: 16px;
 }
 
+.ads-filter-header {
+  grid-column: 1 / -1; /* שהמחיצה תהיה לרוחב כל הטורים */
+  border-bottom: 2px solid #ffe066;
+  padding-bottom: 18px;
+  margin-bottom: 24px;
+  background: none;
+}
+
 .search-input-container button:hover {
   background: #e0a800;
 }
@@ -440,3 +448,5 @@
   font-size: 0.75em;
   padding: 0.22em 0.6em;
 }
+
+

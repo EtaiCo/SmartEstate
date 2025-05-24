@@ -28,7 +28,18 @@ export default function MapBeerSheva() {
   const [searchResult, setSearchResult] = useState(null);
   const [nearestPOIs, setNearestPOIs] = useState(null);
   const [ads, setAds] = useState([]);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(0);
+  const [propertyType, setPropertyType] = useState('');
   const navigate = useNavigate();
+
+  // Property type mapping
+  const PROPERTY_TYPES = {
+    'apartment': 'דירה',
+    'house': 'בית פרטי',
+    'penthouse': 'נטהאוס',
+    'studio': 'סטודיו'
+  };
 
   useEffect(() => {
     const fetchAds = async () => {
@@ -97,6 +108,16 @@ export default function MapBeerSheva() {
     }
   };
 
+  // Filter ads by price range and property type
+  const adsFiltered = ads.filter((ad) => {
+    if (minPrice && ad.price < minPrice) return false;
+    if (maxPrice && ad.price > maxPrice) return false;
+    if (propertyType && ad.property_type !== propertyType) return false;
+    return true;
+  });
+
+  console.log('Filtered ads:', adsFiltered);
+
   return (
     <div className="map-fullscreen-layout">
       <div className="top-panel">
@@ -154,8 +175,47 @@ export default function MapBeerSheva() {
         </div>
 
         <div className="ads-scrollable ads-narrow">
-          <h4 style={{ textAlign: "right", marginBottom: "1rem" }}>תוצאות</h4>
-          {ads.map((ad) => (
+        <div className="ads-filter-header">
+  <h4 style={{ textAlign: "right", margin: 0, whiteSpace: "nowrap" }}>תוצאות</h4>
+  <div style={{
+    display: "flex",
+    gap: "0.5rem",
+    alignItems: "center",
+    marginTop: "0.7rem",
+    direction: "rtl"
+  }}>
+    <select
+      value={propertyType}
+      onChange={e => setPropertyType(e.target.value)}
+      style={{ width: "120px", direction: "rtl" }}
+    >
+      <option value="">סוג נכס</option>
+      <option value="apartment">דירה</option>
+      <option value="house">בית פרטי</option>
+      <option value="penthouse">פנטהאוס</option>
+      <option value="studio">סטודיו</option>
+    </select>
+    <input
+      type="number"
+      placeholder="מחיר מינ׳"
+      value={minPrice || ''}
+      onChange={e => setMinPrice(Number(e.target.value))}
+      style={{ width: "80px", direction: "rtl" }}
+      min={0}
+    />
+    <span>-</span>
+    <input
+      type="number"
+      placeholder="מחיר מקס׳"
+      value={maxPrice || ''}
+      onChange={e => setMaxPrice(Number(e.target.value))}
+      style={{ width: "80px", direction: "rtl" }}
+      min={0}
+    />
+  </div>
+</div>
+
+          {adsFiltered.map((ad) => (
             <AdCard
               key={ad.id}
               ad={ad}
@@ -168,3 +228,5 @@ export default function MapBeerSheva() {
     </div>
   );
 }
+
+

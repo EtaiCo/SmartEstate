@@ -49,7 +49,10 @@ export default function AdCard({ ad, pois, activeLayers }) {
         <Card.Subtitle className="mb-2 text-muted">{ad.address}</Card.Subtitle>
 
         <div className="small text-secondary mb-2">
-          {ad.rooms} חדרים | קומה {ad.floor ?? "?"} | {ad.size} מ"ר
+          {ad.property_type === 'apartment' && 'דירה'}
+          {ad.property_type === 'house' && 'בית פרטי'}
+          {ad.property_type === 'penthouse' && 'פנטהאוס'}
+          {ad.property_type === 'studio' && 'סטודיו'} | {ad.rooms} חדרים | קומה {ad.floor ?? "?"} | {ad.size} מ"ר
         </div>
 
         {/* תכונות מיוחדות */}
