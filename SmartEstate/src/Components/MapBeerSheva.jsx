@@ -29,8 +29,16 @@ export default function MapBeerSheva() {
   const [maxPrice, setMaxPrice] = useState(0);
   const [adType, setAdType] = useState("");
   const [maxSize, setMaxSize] = useState(0);
-
+  const [propertyType, setPropertyType] = useState('');
   const navigate = useNavigate();
+
+  // Property type mapping
+  const PROPERTY_TYPES = {
+    'apartment': 'דירה',
+    'house': 'בית פרטי',
+    'penthouse': 'נטהאוס',
+    'studio': 'סטודיו'
+  };
 
   useEffect(() => {
     const fetchAds = async () => {
@@ -105,9 +113,11 @@ export default function MapBeerSheva() {
     if (maxPrice && ad.price > maxPrice) return false;
     if (adType && ad.ad_type !== adType) return false;
     if (maxSize && ad.size > maxSize) return false;
-
+    if (propertyType && ad.property_type !== propertyType) return false;
     return true;
   });
+
+  console.log('Filtered ads:', adsFiltered);
 
   return (
     <div className="map-fullscreen-layout">
@@ -246,3 +256,5 @@ export default function MapBeerSheva() {
     </div>
   );
 }
+
+
