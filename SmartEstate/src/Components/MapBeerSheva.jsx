@@ -27,7 +27,9 @@ export default function MapBeerSheva() {
   const [ads, setAds] = useState([]);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
-  const [adType, setAdType] = useState(""); // Hebrew: מכירה / השכרה
+  const [adType, setAdType] = useState("");
+  const [maxSize, setMaxSize] = useState(0);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -102,6 +104,8 @@ export default function MapBeerSheva() {
     if (minPrice && ad.price < minPrice) return false;
     if (maxPrice && ad.price > maxPrice) return false;
     if (adType && ad.ad_type !== adType) return false;
+    if (maxSize && ad.size > maxSize) return false;
+
     return true;
   });
 
@@ -210,6 +214,22 @@ export default function MapBeerSheva() {
                 <option value="מכירה">מכירה</option>
                 <option value="השכרה">השכרה</option>
               </select>
+            </div>
+            <div style={{ marginTop: "0.5rem", direction: "rtl" }}>
+              <label style={{ fontWeight: "bold" }}>גודל מקסימלי (מ"ר)</label>
+              <input
+                type="number"
+                placeholder="לדוג׳ 120"
+                value={maxSize || ""}
+                onChange={(e) => setMaxSize(Number(e.target.value))}
+                style={{
+                  width: "100%",
+                  padding: "0.3rem",
+                  marginTop: "0.2rem",
+                  direction: "rtl",
+                }}
+                min={0}
+              />
             </div>
           </div>
 
