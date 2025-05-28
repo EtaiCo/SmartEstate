@@ -190,6 +190,17 @@ export default function MapBeerSheva() {
                 direction: "rtl",
               }}
             >
+              <select
+      value={propertyType}
+      onChange={e => setPropertyType(e.target.value)}
+      style={{ width: "120px", direction: "rtl" }}
+    >
+      <option value="">סוג נכס</option>
+      <option value="apartment">דירה</option>
+      <option value="house">בית פרטי</option>
+      <option value="penthouse">פנטהאוס</option>
+      <option value="studio">סטודיו</option>
+    </select>
               <input
                 type="number"
                 placeholder="מחיר מינ׳"
@@ -256,5 +267,3 @@ export default function MapBeerSheva() {
     </div>
   );
 }
-
-
