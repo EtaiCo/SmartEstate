@@ -30,20 +30,31 @@ export default function MapBeerSheva() {
   const [adType, setAdType] = useState("");
   const [maxSize, setMaxSize] = useState(0);
   const [propertyType, setPropertyType] = useState('');
+  const [likedAdIds, setLikedAdIds] = useState([]);
   const navigate = useNavigate();
 
-  // Property type mapping
-  const PROPERTY_TYPES = {
-    'apartment': 'דירה',
-    'house': 'בית פרטי',
-    'penthouse': 'נטהאוס',
-    'studio': 'סטודיו'
-  };
+  useEffect(() => {
+    const fetchLikedAds = async () => {
+      try {
+        const res = await fetch("http://localhost:8000/likes/", {
+          credentials: "include",
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setLikedAdIds(data.map((like) => like.ad_id));
+        }
+      } catch (err) {
+        console.error("Failed to fetch liked ads:", err);
+      }
+    };
+
+    fetchLikedAds();
+  }, []);
 
   useEffect(() => {
     const fetchAds = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/ads", {withCredentials: true});
+        const response = await axios.get("http://localhost:8000/ads", { withCredentials: true });
         if (response.status !== 200) {
           console.error("Failed to fetch ads:", response.statusText);
           return;
@@ -111,7 +122,6 @@ export default function MapBeerSheva() {
     }
   };
 
-  // Filter ads by price and Hebrew ad_type
   const adsFiltered = ads.filter((ad) => {
     if (minPrice && ad.price < minPrice) return false;
     if (maxPrice && ad.price > maxPrice) return false;
@@ -120,8 +130,6 @@ export default function MapBeerSheva() {
     if (propertyType && ad.property_type !== propertyType) return false;
     return true;
   });
-
-  console.log('Filtered ads:', adsFiltered);
 
   return (
     <div className="map-fullscreen-layout">
@@ -181,30 +189,20 @@ export default function MapBeerSheva() {
 
         <div className="ads-scrollable ads-narrow">
           <div className="ads-filter-header">
-            <h4 style={{ textAlign: "right", margin: 0, whiteSpace: "nowrap" }}>
-              תוצאות
-            </h4>
+            <h4 style={{ textAlign: "right", margin: 0, whiteSpace: "nowrap" }}>תוצאות</h4>
 
-            <div
-              style={{
-                display: "flex",
-                gap: "0.5rem",
-                alignItems: "center",
-                marginTop: "0.7rem",
-                direction: "rtl",
-              }}
-            >
+            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginTop: "0.7rem", direction: "rtl" }}>
               <select
-      value={propertyType}
-      onChange={e => setPropertyType(e.target.value)}
-      style={{ width: "120px", direction: "rtl" }}
-    >
-      <option value="">סוג נכס</option>
-      <option value="apartment">דירה</option>
-      <option value="house">בית פרטי</option>
-      <option value="penthouse">פנטהאוס</option>
-      <option value="studio">סטודיו</option>
-    </select>
+                value={propertyType}
+                onChange={(e) => setPropertyType(e.target.value)}
+                style={{ width: "120px", direction: "rtl" }}
+              >
+                <option value="">סוג נכס</option>
+                <option value="apartment">דירה</option>
+                <option value="house">בית פרטי</option>
+                <option value="penthouse">פנטהאוס</option>
+                <option value="studio">סטודיו</option>
+              </select>
               <input
                 type="number"
                 placeholder="מחיר מינ׳"
@@ -229,11 +227,7 @@ export default function MapBeerSheva() {
               <select
                 value={adType}
                 onChange={(e) => setAdType(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "0.3rem",
-                  marginTop: "0.2rem",
-                }}
+                style={{ width: "100%", padding: "0.3rem", marginTop: "0.2rem" }}
               >
                 <option value="">הצג הכל</option>
                 <option value="מכירה">מכירה</option>
@@ -247,12 +241,7 @@ export default function MapBeerSheva() {
                 placeholder="לדוג׳ 120"
                 value={maxSize || ""}
                 onChange={(e) => setMaxSize(Number(e.target.value))}
-                style={{
-                  width: "100%",
-                  padding: "0.3rem",
-                  marginTop: "0.2rem",
-                  direction: "rtl",
-                }}
+                style={{ width: "100%", padding: "0.3rem", marginTop: "0.2rem", direction: "rtl" }}
                 min={0}
               />
             </div>
@@ -264,6 +253,7 @@ export default function MapBeerSheva() {
               ad={ad}
               pois={pois}
               activeLayers={activeLayers}
+              likedAdIds={likedAdIds}
             />
           ))}
         </div>

@@ -6,9 +6,11 @@ import { AVAILABLE_LAYERS } from "./utils";
 import { findNearestPOIs } from "./utils";
 import { ICONS } from "./utils";
 import StarRating from "./StarRating";
+import LikeButton from "./LikeButton";
 
 
-export default function AdCard({ ad, pois, activeLayers }) {
+
+export default function AdCard({ ad, pois, activeLayers,likedAdIds = [] }) {
   const navigate = useNavigate();
   console.log("Ad data:", ad); // ✅ Log here, not inside JSX
 
@@ -44,9 +46,8 @@ export default function AdCard({ ad, pois, activeLayers }) {
           <div className="fw-bold fs-5 text-end">
             ₪{ad.price.toLocaleString()}
           </div>
-          <div role="button" title="הוסף למועדפים">
-            ❤️
-          </div>
+          <LikeButton adId={ad.id} initiallyLiked={likedAdIds?.includes(ad.id)} />
+
         </div>
 
         
