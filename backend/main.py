@@ -12,6 +12,8 @@ import requests
 from datetime import date
 import os
 from sqlalchemy import JSON  # הוסף למעלה אם יש לך SQLAlchemy 1.3+ (אחרת נשתמש ב-Text)
+from utils.ranking import score_apartment, calculate_star_rating  
+
 
 
 
@@ -717,8 +719,17 @@ def get_reviews(db: Session = Depends(get_db)):
 
 
 @app.get("/ads")
-async def get_ads(db: db_dependency):
+async def get_ads(request: Request, db: db_dependency):
     """Get all ads for display on map"""
+    user = request.session.get("user")
+    preferences = None
+    if user:
+        db_user = db.query(models.Users).filter(models.Users.email == user["email"]).first()
+        if db_user:
+            preferences = db.query(models.UserPreferences).filter(
+                models.UserPreferences.user_id == db_user.ID
+            ).first()
+
     ads = db.query(models.Ad).all()
     
     # Convert ads to a format suitable for the frontend
@@ -746,6 +757,11 @@ async def get_ads(db: db_dependency):
             "publish_date": ad.publish_date.isoformat() if ad.publish_date else None,
             "description": ad.description
         }
+        if preferences:
+            score = score_apartment(ad, preferences)
+            stars = calculate_star_rating(score)
+            ad_dict["score"] = score
+            ad_dict["stars"] = stars
         ad_list.append(ad_dict)
     
     return ad_list
