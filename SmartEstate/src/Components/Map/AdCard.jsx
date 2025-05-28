@@ -5,9 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { AVAILABLE_LAYERS } from "./utils";
 import { findNearestPOIs } from "./utils";
 import { ICONS } from "./utils";
+import StarRating from "./StarRating";
+
 
 export default function AdCard({ ad, pois, activeLayers }) {
   const navigate = useNavigate();
+  console.log("Ad data:", ad); // ✅ Log here, not inside JSX
 
   const nearest =
     pois.length > 0 && activeLayers.length > 0
@@ -46,6 +49,18 @@ export default function AdCard({ ad, pois, activeLayers }) {
           </div>
         </div>
 
+        
+            {ad.stars !== undefined ? (
+              <div className="text-end mb-2">
+                דירוג מותאם עבורך:
+                <StarRating stars={ad.stars} />
+              </div>
+            ) : (
+              <div className="text-end text-muted small">
+                (אין דירוג למודעה זו)
+              </div>
+            )}
+
         <Card.Subtitle className="mb-2 text-muted">{ad.address}</Card.Subtitle>
 
         <div className="small text-secondary mb-2">
@@ -69,7 +84,10 @@ export default function AdCard({ ad, pois, activeLayers }) {
         >
           צפה בפרטי הדירה
         </Button>
+        
       </Card.Body>
     </Card>
+
+    
   );
 }

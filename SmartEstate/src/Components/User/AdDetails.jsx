@@ -108,7 +108,7 @@ const LABELS_CONFIG = [
 
 const PROPERTY_TYPES_HE = {
   apartment: "דירה",
-  house: "בית פרטי",
+  private_house: "בית פרטי",
   penthouse: "פנטהאוס",
   studio: "סטודיו",
 };

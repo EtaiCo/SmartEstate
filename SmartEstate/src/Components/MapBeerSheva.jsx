@@ -33,7 +33,11 @@ export default function MapBeerSheva() {
   useEffect(() => {
     const fetchAds = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/ads");
+        const response = await axios.get("http://localhost:8000/ads", {withCredentials: true});
+        if (response.status !== 200) {
+          console.error("Failed to fetch ads:", response.statusText);
+          return;
+        }
         setAds(response.data);
       } catch (error) {
         console.error("Error fetching ads:", error);
