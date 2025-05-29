@@ -1,4 +1,3 @@
-// ClickHandler.jsx
 import { useMapEvent } from "react-leaflet";
 import axios from "axios";
 

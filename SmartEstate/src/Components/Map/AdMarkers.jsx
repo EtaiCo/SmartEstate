@@ -1,4 +1,3 @@
-// AdMarkers.jsx
 import React from "react";
 import { Marker, Popup } from "react-leaflet";
 import { ICONS, AVAILABLE_LAYERS, findNearestPOIs } from "./utils";

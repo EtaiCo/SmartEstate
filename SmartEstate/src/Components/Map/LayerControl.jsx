@@ -1,8 +1,6 @@
-// LayerControl.jsx
 import React, { useState } from "react";
 import { AVAILABLE_LAYERS } from "./utils";
 
-// צבעים לכל שכבה (בהתאם למה שבתמונה שלך)
 const LAYER_COLORS = {
   park: "#4ecb8f",
   school: "#a084e8",

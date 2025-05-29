@@ -1,4 +1,3 @@
-// 📁 components/AdCard.jsx
 import React from "react";
 import { Card, Badge, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +5,6 @@ import { AVAILABLE_LAYERS } from "./utils";
 import { findNearestPOIs } from "./utils";
 import { ICONS } from "./utils";
 import StarRating from "./StarRating";
-
 
 export default function AdCard({ ad, pois, activeLayers }) {
   const navigate = useNavigate();
@@ -49,25 +47,23 @@ export default function AdCard({ ad, pois, activeLayers }) {
           </div>
         </div>
 
-        
-            {ad.stars !== undefined ? (
-              <div className="text-end mb-2">
-                דירוג מותאם עבורך:
-                <StarRating stars={ad.stars} />
-              </div>
-            ) : (
-              <div className="text-end text-muted small">
-                (אין דירוג למודעה זו)
-              </div>
-            )}
+        {ad.stars !== undefined ? (
+          <div className="text-end mb-2">
+            דירוג מותאם עבורך:
+            <StarRating stars={ad.stars} />
+          </div>
+        ) : (
+          <div className="text-end text-muted small">(אין דירוג למודעה זו)</div>
+        )}
 
         <Card.Subtitle className="mb-2 text-muted">{ad.address}</Card.Subtitle>
 
         <div className="small text-secondary mb-2">
-          {ad.property_type === 'apartment' && 'דירה'}
-          {ad.property_type === 'house' && 'בית פרטי'}
-          {ad.property_type === 'penthouse' && 'פנטהאוס'}
-          {ad.property_type === 'studio' && 'סטודיו'} | {ad.rooms} חדרים | קומה {ad.floor ?? "?"} | {ad.size} מ"ר
+          {ad.property_type === "apartment" && "דירה"}
+          {ad.property_type === "house" && "בית פרטי"}
+          {ad.property_type === "penthouse" && "פנטהאוס"}
+          {ad.property_type === "studio" && "סטודיו"} | {ad.rooms} חדרים | קומה{" "}
+          {ad.floor ?? "?"} | {ad.size} מ"ר
         </div>
 
         {/* תכונות מיוחדות */}
@@ -79,18 +75,16 @@ export default function AdCard({ ad, pois, activeLayers }) {
             <span className="badge bg-secondary">חיות מחמד</span>
           )}
         </div>
-
-        <Button
-          variant="outline-warning"
-          className="w-100 fw-bold mt-2"
-          onClick={() => navigate(`/ad/${ad.id}`)}
-        >
-          צפה בפרטי הדירה
-        </Button>
-        
+        <div className="mt-auto">
+          <Button
+            variant="outline-warning"
+            className="w-100 fw-bold mt-2"
+            onClick={() => navigate(`/ad/${ad.id}`)}
+          >
+            צפה בפרטי הדירה
+          </Button>
+        </div>
       </Card.Body>
     </Card>
-
-    
   );
 }

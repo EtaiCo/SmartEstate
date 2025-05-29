@@ -15,6 +15,7 @@ import {
   AdCard,
   AdMarkers,
   findNearestPOIs,
+  FixMapResize,
 } from "./Map";
 
 export default function MapBeerSheva() {
@@ -29,21 +30,23 @@ export default function MapBeerSheva() {
   const [maxPrice, setMaxPrice] = useState(0);
   const [adType, setAdType] = useState("");
   const [maxSize, setMaxSize] = useState(0);
-  const [propertyType, setPropertyType] = useState('');
+  const [propertyType, setPropertyType] = useState("");
   const navigate = useNavigate();
 
   // Property type mapping
   const PROPERTY_TYPES = {
-    'apartment': 'דירה',
-    'house': 'בית פרטי',
-    'penthouse': 'נטהאוס',
-    'studio': 'סטודיו'
+    apartment: "דירה",
+    house: "בית פרטי",
+    penthouse: "נטהאוס",
+    studio: "סטודיו",
   };
 
   useEffect(() => {
     const fetchAds = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/ads", {withCredentials: true});
+        const response = await axios.get("http://localhost:8000/ads", {
+          withCredentials: true,
+        });
         if (response.status !== 200) {
           console.error("Failed to fetch ads:", response.statusText);
           return;
@@ -121,7 +124,7 @@ export default function MapBeerSheva() {
     return true;
   });
 
-  console.log('Filtered ads:', adsFiltered);
+  console.log("Filtered ads:", adsFiltered);
 
   return (
     <div className="map-fullscreen-layout">
@@ -143,6 +146,7 @@ export default function MapBeerSheva() {
             zoom={13}
             style={{ height: "100%", width: "100%" }}
           >
+            <FixMapResize />
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -195,16 +199,16 @@ export default function MapBeerSheva() {
               }}
             >
               <select
-      value={propertyType}
-      onChange={e => setPropertyType(e.target.value)}
-      style={{ width: "120px", direction: "rtl" }}
-    >
-      <option value="">סוג נכס</option>
-      <option value="apartment">דירה</option>
-      <option value="house">בית פרטי</option>
-      <option value="penthouse">פנטהאוס</option>
-      <option value="studio">סטודיו</option>
-    </select>
+                value={propertyType}
+                onChange={(e) => setPropertyType(e.target.value)}
+                style={{ width: "120px", direction: "rtl" }}
+              >
+                <option value="">סוג נכס</option>
+                <option value="apartment">דירה</option>
+                <option value="house">בית פרטי</option>
+                <option value="penthouse">פנטהאוס</option>
+                <option value="studio">סטודיו</option>
+              </select>
               <input
                 type="number"
                 placeholder="מחיר מינ׳"
