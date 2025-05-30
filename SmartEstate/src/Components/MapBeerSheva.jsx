@@ -34,6 +34,8 @@ export default function MapBeerSheva() {
   const [maxSize, setMaxSize] = useState(0);
   const [propertyType, setPropertyType] = useState("");
   const [features, setFeatures] = useState([]); // <-- מאפייני דירה
+  const [minRooms, setMinRooms] = useState(0);
+  const [maxRooms, setMaxRooms] = useState(0);
 
   const navigate = useNavigate();
 
@@ -124,6 +126,8 @@ export default function MapBeerSheva() {
     if (maxPrice && ad.price > maxPrice) return false;
     if (adType && ad.ad_type !== adType) return false;
     if (maxSize && ad.size > maxSize) return false;
+    if (minRooms && ad.rooms < minRooms) return false;
+    if (maxRooms && ad.rooms > maxRooms) return false;
     if (propertyType && ad.property_type !== propertyType) return false;
     if (features.length > 0) {
       for (const f of features) {
@@ -195,7 +199,7 @@ export default function MapBeerSheva() {
         <div className="ads-scrollable ads-narrow">
           <div className="ads-filter-header">
             <h4 style={{ textAlign: "right", margin: 0, whiteSpace: "nowrap" }}>
-              תוצאות
+              סינון מודעות
             </h4>
             <AdFilters
               propertyType={propertyType}
@@ -208,11 +212,17 @@ export default function MapBeerSheva() {
               setAdType={setAdType}
               maxSize={maxSize}
               setMaxSize={setMaxSize}
+              minRooms={minRooms}
+              setMinRooms={setMinRooms}
+              maxRooms={maxRooms}
+              setMaxRooms={setMaxRooms}
             />
 
             <FeatureFilter selected={features} onChange={setFeatures} />
           </div>
-
+          <h4 style={{ textAlign: "right", margin: 0, whiteSpace: "nowrap" }}>
+            המודעות שנמצאו
+          </h4>
           {adsFiltered.map((ad) => (
             <AdCard
               key={ad.id}

@@ -11,13 +11,17 @@ export default function AdFilters({
   setAdType,
   maxSize,
   setMaxSize,
+  minRooms,
+  setMinRooms,
+  maxRooms,
+  setMaxRooms,
 }) {
   return (
     <div
       style={{
-        display: "flex",
+        display: "grid",
+        gridTemplateColumns: "repeat(3, 1fr)",
         gap: "1.2rem",
-        alignItems: "flex-end",
         marginTop: "1.2rem",
         direction: "rtl",
       }}
@@ -123,6 +127,38 @@ export default function AdFilters({
           }}
           min={0}
         />
+      </div>
+      {/* חדרים */}
+      <div style={{ textAlign: "right" }}>
+        <div style={{ fontWeight: "bold", marginBottom: "0.3rem" }}>חדרים</div>
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          <input
+            type="number"
+            placeholder="מינימום"
+            value={minRooms || ""}
+            onChange={(e) => setMinRooms(Number(e.target.value))}
+            style={{
+              width: "80px",
+              minWidth: "60px",
+              padding: "0.3rem",
+              direction: "rtl",
+            }}
+            min={0}
+          />
+          <input
+            type="number"
+            placeholder="מקסימום"
+            value={maxRooms || ""}
+            onChange={(e) => setMaxRooms(Number(e.target.value))}
+            style={{
+              width: "80px",
+              minWidth: "60px",
+              padding: "0.3rem",
+              direction: "rtl",
+            }}
+            min={0}
+          />
+        </div>
       </div>
     </div>
   );
