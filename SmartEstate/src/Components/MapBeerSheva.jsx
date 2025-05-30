@@ -5,6 +5,8 @@ import axios from "axios";
 import "leaflet/dist/leaflet.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./MapStyles.css";
+import FeatureFilter from "./User/FeatureFilter"; // Importing the FeatureFilter component
+import AdFilters from "./User/AdFilters"; // Importing the AdFilters component
 
 import {
   SearchControl,
@@ -31,6 +33,8 @@ export default function MapBeerSheva() {
   const [adType, setAdType] = useState("");
   const [maxSize, setMaxSize] = useState(0);
   const [propertyType, setPropertyType] = useState("");
+  const [features, setFeatures] = useState([]); // <-- מאפייני דירה
+
   const navigate = useNavigate();
 
   // Property type mapping
@@ -121,6 +125,11 @@ export default function MapBeerSheva() {
     if (adType && ad.ad_type !== adType) return false;
     if (maxSize && ad.size > maxSize) return false;
     if (propertyType && ad.property_type !== propertyType) return false;
+    if (features.length > 0) {
+      for (const f of features) {
+        if (!ad[f]) return false;
+      }
+    }
     return true;
   });
 
@@ -188,78 +197,20 @@ export default function MapBeerSheva() {
             <h4 style={{ textAlign: "right", margin: 0, whiteSpace: "nowrap" }}>
               תוצאות
             </h4>
+            <AdFilters
+              propertyType={propertyType}
+              setPropertyType={setPropertyType}
+              minPrice={minPrice}
+              setMinPrice={setMinPrice}
+              maxPrice={maxPrice}
+              setMaxPrice={setMaxPrice}
+              adType={adType}
+              setAdType={setAdType}
+              maxSize={maxSize}
+              setMaxSize={setMaxSize}
+            />
 
-            <div
-              style={{
-                display: "flex",
-                gap: "0.5rem",
-                alignItems: "center",
-                marginTop: "0.7rem",
-                direction: "rtl",
-              }}
-            >
-              <select
-                value={propertyType}
-                onChange={(e) => setPropertyType(e.target.value)}
-                style={{ width: "120px", direction: "rtl" }}
-              >
-                <option value="">סוג נכס</option>
-                <option value="apartment">דירה</option>
-                <option value="house">בית פרטי</option>
-                <option value="penthouse">פנטהאוס</option>
-                <option value="studio">סטודיו</option>
-              </select>
-              <input
-                type="number"
-                placeholder="מחיר מינ׳"
-                value={minPrice || ""}
-                onChange={(e) => setMinPrice(Number(e.target.value))}
-                style={{ width: "80px", direction: "rtl" }}
-                min={0}
-              />
-              <span>-</span>
-              <input
-                type="number"
-                placeholder="מחיר מקס׳"
-                value={maxPrice || ""}
-                onChange={(e) => setMaxPrice(Number(e.target.value))}
-                style={{ width: "80px", direction: "rtl" }}
-                min={0}
-              />
-            </div>
-
-            <div style={{ marginTop: "0.5rem", direction: "rtl" }}>
-              <label style={{ fontWeight: "bold" }}>סוג מודעה</label>
-              <select
-                value={adType}
-                onChange={(e) => setAdType(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "0.3rem",
-                  marginTop: "0.2rem",
-                }}
-              >
-                <option value="">הצג הכל</option>
-                <option value="מכירה">מכירה</option>
-                <option value="השכרה">השכרה</option>
-              </select>
-            </div>
-            <div style={{ marginTop: "0.5rem", direction: "rtl" }}>
-              <label style={{ fontWeight: "bold" }}>גודל מקסימלי (מ"ר)</label>
-              <input
-                type="number"
-                placeholder="לדוג׳ 120"
-                value={maxSize || ""}
-                onChange={(e) => setMaxSize(Number(e.target.value))}
-                style={{
-                  width: "100%",
-                  padding: "0.3rem",
-                  marginTop: "0.2rem",
-                  direction: "rtl",
-                }}
-                min={0}
-              />
-            </div>
+            <FeatureFilter selected={features} onChange={setFeatures} />
           </div>
 
           {adsFiltered.map((ad) => (
