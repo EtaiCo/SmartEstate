@@ -32,27 +32,21 @@ export default function MapBeerSheva() {
   const [maxPrice, setMaxPrice] = useState(0);
   const [adType, setAdType] = useState("");
   const [maxSize, setMaxSize] = useState(0);
-  const [propertyType, setPropertyType] = useState("");
-  const [features, setFeatures] = useState([]); // <-- מאפייני דירה
-  const [minRooms, setMinRooms] = useState(0);
-  const [maxRooms, setMaxRooms] = useState(0);
-
+  const [propertyType, setPropertyType] = useState('');
   const navigate = useNavigate();
 
   // Property type mapping
   const PROPERTY_TYPES = {
-    apartment: "דירה",
-    house: "בית פרטי",
-    penthouse: "נטהאוס",
-    studio: "סטודיו",
+    'apartment': 'דירה',
+    'house': 'בית פרטי',
+    'penthouse': 'נטהאוס',
+    'studio': 'סטודיו'
   };
 
   useEffect(() => {
     const fetchAds = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/ads", {
-          withCredentials: true,
-        });
+        const response = await axios.get("http://localhost:8000/ads", {withCredentials: true});
         if (response.status !== 200) {
           console.error("Failed to fetch ads:", response.statusText);
           return;
@@ -120,7 +114,6 @@ export default function MapBeerSheva() {
     }
   };
 
-  // Filter ads by price and Hebrew ad_type
   const adsFiltered = ads.filter((ad) => {
     if (minPrice && ad.price < minPrice) return false;
     if (maxPrice && ad.price > maxPrice) return false;
@@ -137,7 +130,7 @@ export default function MapBeerSheva() {
     return true;
   });
 
-  console.log("Filtered ads:", adsFiltered);
+  console.log('Filtered ads:', adsFiltered);
 
   return (
     <div className="map-fullscreen-layout">
@@ -199,26 +192,80 @@ export default function MapBeerSheva() {
         <div className="ads-scrollable ads-narrow">
           <div className="ads-filter-header">
             <h4 style={{ textAlign: "right", margin: 0, whiteSpace: "nowrap" }}>
-              סינון מודעות
+              תוצאות
             </h4>
-            <AdFilters
-              propertyType={propertyType}
-              setPropertyType={setPropertyType}
-              minPrice={minPrice}
-              setMinPrice={setMinPrice}
-              maxPrice={maxPrice}
-              setMaxPrice={setMaxPrice}
-              adType={adType}
-              setAdType={setAdType}
-              maxSize={maxSize}
-              setMaxSize={setMaxSize}
-              minRooms={minRooms}
-              setMinRooms={setMinRooms}
-              maxRooms={maxRooms}
-              setMaxRooms={setMaxRooms}
-            />
 
-            <FeatureFilter selected={features} onChange={setFeatures} />
+            <div
+              style={{
+                display: "flex",
+                gap: "0.5rem",
+                alignItems: "center",
+                marginTop: "0.7rem",
+                direction: "rtl",
+              }}
+            >
+              <select
+      value={propertyType}
+      onChange={e => setPropertyType(e.target.value)}
+      style={{ width: "120px", direction: "rtl" }}
+    >
+      <option value="">סוג נכס</option>
+      <option value="apartment">דירה</option>
+      <option value="house">בית פרטי</option>
+      <option value="penthouse">פנטהאוס</option>
+      <option value="studio">סטודיו</option>
+    </select>
+              <input
+                type="number"
+                placeholder="מחיר מינ׳"
+                value={minPrice || ""}
+                onChange={(e) => setMinPrice(Number(e.target.value))}
+                style={{ width: "80px", direction: "rtl" }}
+                min={0}
+              />
+              <span>-</span>
+              <input
+                type="number"
+                placeholder="מחיר מקס׳"
+                value={maxPrice || ""}
+                onChange={(e) => setMaxPrice(Number(e.target.value))}
+                style={{ width: "80px", direction: "rtl" }}
+                min={0}
+              />
+            </div>
+
+            <div style={{ marginTop: "0.5rem", direction: "rtl" }}>
+              <label style={{ fontWeight: "bold" }}>סוג מודעה</label>
+              <select
+                value={adType}
+                onChange={(e) => setAdType(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "0.3rem",
+                  marginTop: "0.2rem",
+                }}
+              >
+                <option value="">הצג הכל</option>
+                <option value="מכירה">מכירה</option>
+                <option value="השכרה">השכרה</option>
+              </select>
+            </div>
+            <div style={{ marginTop: "0.5rem", direction: "rtl" }}>
+              <label style={{ fontWeight: "bold" }}>גודל מקסימלי (מ"ר)</label>
+              <input
+                type="number"
+                placeholder="לדוג׳ 120"
+                value={maxSize || ""}
+                onChange={(e) => setMaxSize(Number(e.target.value))}
+                style={{
+                  width: "100%",
+                  padding: "0.3rem",
+                  marginTop: "0.2rem",
+                  direction: "rtl",
+                }}
+                min={0}
+              />
+            </div>
           </div>
           <h4 style={{ textAlign: "right", margin: 0, whiteSpace: "nowrap" }}>
             המודעות שנמצאו
@@ -229,6 +276,7 @@ export default function MapBeerSheva() {
               ad={ad}
               pois={pois}
               activeLayers={activeLayers}
+              likedAdIds={likedAdIds}
             />
           ))}
         </div>
