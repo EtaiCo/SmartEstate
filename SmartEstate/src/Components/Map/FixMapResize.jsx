@@ -7,7 +7,7 @@ const FixMapResize = () => {
   useEffect(() => {
     setTimeout(() => {
       map.invalidateSize();
-    }, 200);
+    }, 400);
   }, [map]);
 
   return null;

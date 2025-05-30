@@ -188,7 +188,7 @@ export default function MapBeerSheva() {
               clicked={clicked}
             />
             <AdMarkers
-              ads={ads}
+              ads={adsFiltered}
               pois={pois}
               activeLayers={activeLayers}
               clicked={clicked}
