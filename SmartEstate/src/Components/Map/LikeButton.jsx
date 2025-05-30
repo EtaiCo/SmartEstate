@@ -39,7 +39,7 @@ export default function LikeButton({ adId, initiallyLiked = false }) {
           setLiked(true);
         } else {
           const data = await response.json();
-          alert(data.detail || "שגיאה בהוספה למועדפים");
+          alert(data.detail || "שגיאה למועדפים");
         }
       }
     } catch (error) {
