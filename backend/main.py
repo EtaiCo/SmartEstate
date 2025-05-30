@@ -128,6 +128,90 @@ class ReviewCreate(BaseModel):
     content: str
     rating: int
 
+   
+class LikedAdCreate(BaseModel):
+    ad_id: int
+
+class LikedAdResponse(BaseModel):
+    id: int
+    user_id: int
+    ad_id: int
+    liked_at: date
+
+    class Config:
+        from_attributes = True
+
+@app.post("/like/")
+def like_ad(request: Request, like_data: LikedAdCreate, db: db_dependency):
+    user = request.session.get("user")
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    db_user = db.query(models.Users).filter(models.Users.email == user["email"]).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    existing = db.query(models.LikedAds).filter_by(user_id=db_user.ID, ad_id=like_data.ad_id).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Ad already liked")
+
+    new_like = models.LikedAds(
+        user_id=db_user.ID,
+        ad_id=like_data.ad_id,
+        liked_at=date.today()  # Fixed: removed reference to like_data.liked_at
+    )
+
+    db.add(new_like)
+    db.commit()
+    db.refresh(new_like)
+
+    return {
+        "message": "Ad liked successfully",
+        "like": {
+            "id": new_like.id,
+            "user_id": new_like.user_id,
+            "ad_id": new_like.ad_id,
+            "liked_at": new_like.liked_at
+        }
+    }
+@app.delete("/like/{ad_id}")
+def unlike_ad(ad_id: int, request: Request, db: db_dependency):
+    user = request.session.get("user")
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    db_user = db.query(models.Users).filter(models.Users.email == user["email"]).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    like = db.query(models.LikedAds).filter_by(user_id=db_user.ID, ad_id=ad_id).first()
+    if not like:
+        raise HTTPException(status_code=404, detail="Like not found")
+
+    db.delete(like)
+    db.commit()
+    return {"message": "Ad unliked successfully"}
+
+
+@app.get("/likes/")
+def get_liked_ads(request: Request, db: Session = Depends(get_db)):
+    user_session = request.session.get("user")
+    if not user_session:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    db_user = db.query(models.Users).filter(models.Users.email == user_session["email"]).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    liked = db.query(models.LikedAds).filter(models.LikedAds.user_id == db_user.ID).all()
+
+    # 4. Return ad_id list
+    return [
+        {"id": like.id, "ad_id": like.ad_id, "liked_at": like.liked_at.isoformat()}
+        for like in liked
+    ]
+
+
 @app.post("/users/")
 async def create_user(user: UserBase, db: db_dependency):
     existing_user = db.query(models.Users).filter(models.Users.email == user.email).first()

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-export default function LikeButton({ adId, initiallyLiked = false }) {
+export default function LikeButton({ adId, initiallyLiked = false, onLikeChange }) {
   const [liked, setLiked] = useState(initiallyLiked);
 
   useEffect(() => {
@@ -18,6 +18,10 @@ export default function LikeButton({ adId, initiallyLiked = false }) {
 
         if (response.ok) {
           setLiked(false);
+          // Notify parent component about the change
+          if (onLikeChange) {
+            onLikeChange(adId, false);
+          }
         } else {
           const data = await response.json();
           alert(data.detail || "שגיאה בהסרה ממועדפים");
@@ -37,6 +41,10 @@ export default function LikeButton({ adId, initiallyLiked = false }) {
 
         if (response.ok) {
           setLiked(true);
+          // Notify parent component about the change
+          if (onLikeChange) {
+            onLikeChange(adId, true);
+          }
         } else {
           const data = await response.json();
           alert(data.detail || "שגיאה בהוספה למועדפים");

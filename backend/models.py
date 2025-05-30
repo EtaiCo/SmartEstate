@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text, Float, Date
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text, Float, Date, UniqueConstraint
 from database import Base
 from datetime import date
 
@@ -92,3 +92,17 @@ class Review(Base):
     content = Column(Text, nullable = False)
     rating = Column(Integer, nullable = False)
     created_at = Column(Date, default = date.today, nullable = False)
+
+
+
+class LikedAds(Base):
+    __tablename__ = 'liked_ads'
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('Users.ID'), nullable=False)
+    ad_id = Column(Integer, ForeignKey('ads.id'), nullable=False)
+    liked_at = Column(Date, default=date.today, nullable=False)
+
+    __table_args__ = (
+    UniqueConstraint('user_id', 'ad_id', name='unique_user_ad_like'),
+)

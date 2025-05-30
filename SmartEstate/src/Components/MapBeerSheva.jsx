@@ -36,6 +36,8 @@ export default function MapBeerSheva() {
   const [features, setFeatures] = useState([]); // <-- מאפייני דירה
   const [minRooms, setMinRooms] = useState(0);
   const [maxRooms, setMaxRooms] = useState(0);
+    const [likedAdIds, setLikedAdIds] = useState([]);
+
 
   const navigate = useNavigate();
 
@@ -46,6 +48,34 @@ export default function MapBeerSheva() {
     penthouse: "נטהאוס",
     studio: "סטודיו",
   };
+
+  const handleLikeChange = (adId, isLiked) => {
+  if (isLiked) {
+    // Add to liked ads
+    setLikedAdIds(prev => [...prev, adId]);
+  } else {
+    // Remove from liked ads
+    setLikedAdIds(prev => prev.filter(id => id !== adId));
+  }
+};
+
+  useEffect(() => {
+    const fetchLikedAds = async () => {
+      try {
+        const res = await fetch("http://localhost:8000/likes/", {
+          credentials: "include",
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setLikedAdIds(data.map((like) => like.ad_id));
+        }
+      } catch (err) {
+        console.error("Failed to fetch liked ads:", err);
+      }
+    };
+
+    fetchLikedAds();
+  }, []);
 
   useEffect(() => {
     const fetchAds = async () => {
@@ -229,6 +259,9 @@ export default function MapBeerSheva() {
               ad={ad}
               pois={pois}
               activeLayers={activeLayers}
+              likedAdIds={likedAdIds}
+              isLiked={likedAdIds.includes(ad.id)}
+              onLikeChange={handleLikeChange} 
             />
           ))}
         </div>
