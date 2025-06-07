@@ -15,6 +15,8 @@ export default function AdFilters({
   setMinRooms,
   maxRooms,
   setMaxRooms,
+  dateRange,
+  setDateRange,
 }) {
   return (
     <div
@@ -26,6 +28,48 @@ export default function AdFilters({
         direction: "rtl",
       }}
     >
+      {/* תאריך פרסום: מתאריך */}
+      <div style={{ textAlign: "right" }}>
+        <div style={{ fontWeight: "bold", marginBottom: "0.3rem" }}>
+          מתאריך פרסום
+        </div>
+        <input
+          type="date"
+          name="startDate"
+          value={dateRange.startDate}
+          onChange={(e) =>
+            setDateRange((prev) => ({ ...prev, startDate: e.target.value }))
+          }
+          max={dateRange.endDate}
+          style={{
+            width: "140px",
+            padding: "0.3rem",
+            direction: "rtl",
+          }}
+        />
+      </div>
+
+      {/* תאריך פרסום: עד תאריך */}
+      <div style={{ textAlign: "right" }}>
+        <div style={{ fontWeight: "bold", marginBottom: "0.3rem" }}>
+          עד תאריך פרסום
+        </div>
+        <input
+          type="date"
+          name="endDate"
+          value={dateRange.endDate}
+          onChange={(e) =>
+            setDateRange((prev) => ({ ...prev, endDate: e.target.value }))
+          }
+          min={dateRange.startDate}
+          style={{
+            width: "140px",
+            padding: "0.3rem",
+            direction: "rtl",
+          }}
+        />
+      </div>
+
       {/* סוג נכס */}
       <div style={{ textAlign: "right" }}>
         <div style={{ fontWeight: "bold", marginBottom: "0.3rem" }}>

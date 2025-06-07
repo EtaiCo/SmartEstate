@@ -36,8 +36,11 @@ export default function MapBeerSheva() {
   const [features, setFeatures] = useState([]); // <-- מאפייני דירה
   const [minRooms, setMinRooms] = useState(0);
   const [maxRooms, setMaxRooms] = useState(0);
-    const [likedAdIds, setLikedAdIds] = useState([]);
-
+  const [likedAdIds, setLikedAdIds] = useState([]);
+  const [dateRange, setDateRange] = useState({
+  startDate: "",
+  endDate: new Date().toISOString().split("T")[0], // ברירת מחדל להיום
+});
 
   const navigate = useNavigate();
 
@@ -164,6 +167,12 @@ export default function MapBeerSheva() {
         if (!ad[f]) return false;
       }
     }
+    if (dateRange.startDate || dateRange.endDate) {
+  const publishDate = new Date(ad.publish_date);
+  const start = dateRange.startDate ? new Date(dateRange.startDate) : new Date(0);
+  const end = dateRange.endDate ? new Date(dateRange.endDate) : new Date();
+  if (publishDate < start || publishDate > end) return false;
+    } 
     return true;
   });
 
@@ -246,6 +255,8 @@ export default function MapBeerSheva() {
               setMinRooms={setMinRooms}
               maxRooms={maxRooms}
               setMaxRooms={setMaxRooms}
+              dateRange={dateRange}
+              setDateRange={setDateRange}
             />
 
             <FeatureFilter selected={features} onChange={setFeatures} />
