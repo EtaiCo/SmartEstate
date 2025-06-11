@@ -138,6 +138,17 @@ class LikedAdResponse(BaseModel):
     ad_id: int
     liked_at: date
 
+class ReviewOut(BaseModel):
+    id: int
+    content: str
+    rating: int
+    created_at: date
+    is_visible: bool
+    author_name: str
+
+class VisibilityUpdate(BaseModel):
+    is_visible: bool
+
     class Config:
         from_attributes = True
 
@@ -800,6 +811,63 @@ def get_reviews(db: Session = Depends(get_db)):
     ]
     
     return review_list
+
+@app.get("/admin/reviews/")
+def get_reviews_for_admin(request: Request, db: Session = Depends(get_db)):
+    user = request.session.get("user")
+    if not user or not user.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Not authorized")
+    """Get all reviews for admin dashboard"""
+    reviews = db.query(models.Review).all()
+    
+    # Convert reviews to a list of dictionaries for easier JSON serialization
+    review_list = [
+        {
+            "id": review.id,
+            "user_id": review.user_id,
+            "author_name": f"{review.user.first_name} {review.user.last_name}" if review.user else "Unknown",
+            "content": review.content,
+            "rating": review.rating,
+            "created_at": review.created_at.isoformat() if review.created_at else None,
+            "is_visible": review.is_visible
+        }
+        for review in reviews
+    ]
+    
+    return review_list
+
+@app.patch("/admin/reviews/{review_id}/visibility")
+def update_review_visibility(review_id: int, visibility_update: VisibilityUpdate, request: Request, db: Session = Depends(get_db)):
+    user = request.session.get("user")
+    if not user or not user.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    review = db.query(models.Review).filter(models.Review.id == review_id).first()
+    if not review:
+        raise HTTPException(status_code=404, detail="Review not found")
+
+    review.is_visible = visibility_update.is_visible
+    db.commit()
+
+    return {"success": True, "is_visible": review.is_visible}
+
+
+@app.get("/reviews/visible")
+def get_visible_reviews(db: Session = Depends(get_db)):
+    reviews = db.query(models.Review).filter(models.Review.is_visible == True).all()
+    reviews_for_show=[
+        {
+            "id": r.id,
+            "content": r.content,
+            "rating": r.rating,
+            "author_name": f"{r.user.first_name} {r.user.last_name}" if r.user else "אנונימי"
+        }
+        for r in reviews
+    ]
+    print("Visible reviews:", reviews_for_show)
+    return reviews_for_show
+
+    
 
 
 @app.get("/ads")

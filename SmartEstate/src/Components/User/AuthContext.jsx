@@ -43,6 +43,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
+    // Provide user and isAdmin state to the context
     <AuthContext.Provider value={{ user, setUser, isAdmin, setIsAdmin }}>
       {children}
     </AuthContext.Provider>

@@ -135,3 +135,47 @@ footer {
     margin-bottom: 1rem;
   }
 }
+.reviews-carousel-wrapper {
+  position: relative; /* כדי ש־absolute יתייחס אליה */
+  background-color: #fff;
+  padding: 4rem 2rem;
+  border-top: 1px solid #eaeaea;
+  overflow: visible; /* חשוב! מאפשר לחצים לצאת החוצה */
+}
+
+/* מיקום החצים מחוץ לגבולות המכולה */
+.reviews-carousel-wrapper .carousel-control-prev,
+.reviews-carousel-wrapper .carousel-control-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3rem;
+  height: 3rem;
+  z-index: 10;
+  opacity: 1;
+}
+
+/* מחוץ לגבול ה־wrapper: */
+.reviews-carousel-wrapper .carousel-control-prev {
+  left: -2rem; /* 2rem שמאלה מחוץ לקונטנט */
+}
+.reviews-carousel-wrapper .carousel-control-next {
+  right: -2rem; /* 2rem ימינה מחוץ לקונטנט */
+}
+
+/* רקע חצי־שקוף ועיגול לאיקונים */
+.reviews-carousel-wrapper .carousel-control-prev-icon,
+.reviews-carousel-wrapper .carousel-control-next-icon {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  padding: 0.5rem;
+  background-size: 1.5rem 1.5rem;
+}
+
+/* החלפת צבע במידת הצורך */
+.reviews-carousel-wrapper .carousel-control-prev-icon {
+  filter: invert(1);
+}
+.reviews-carousel-wrapper .carousel-control-next-icon {
+  filter: invert(1);
+}

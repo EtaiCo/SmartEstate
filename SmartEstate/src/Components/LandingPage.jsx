@@ -2,6 +2,7 @@ import React from "react";
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
 import landingImage from "../assets/landing-illustration.png"; // ← Your saved image
 import "./IconPath.css"; // You can rename this to LandingPage.css if more appropriate
+import ReviewsCarousel from "./ReviewsCarousel"; // Import the reviews carousel component
 
 const LandingPage = () => {
   return (
@@ -9,7 +10,10 @@ const LandingPage = () => {
       <Container fluid>
         <Row>
           {/* Left side: single illustration image */}
-          <Col md={6} className="d-flex align-items-center justify-content-center p-4">
+          <Col
+            md={6}
+            className="d-flex align-items-center justify-content-center p-4"
+          >
             <img
               src={landingImage}
               alt="SmartEstate visual path"
@@ -20,26 +24,32 @@ const LandingPage = () => {
 
           {/* Right side: text + actions */}
           <Col
-  md={6}
-  className="d-flex flex-column justify-content-center align-items-end text-end p-5"
->
-  <h1 className="display-4 fw-bold">
-    הגיע הזמן<br />שהחיפוש יתאים את עצמו אליך
-  </h1>
-  <p className="lead text-muted">
-     
-    בונה עבורך חווית חיפוש דירה מותאמת אישית 
-    שמבינה אותך ואת הסביבה שתרצה לחיות בה
-  </p>
-  <div className="d-flex gap-3 mt-4 ">
-    <Button className="rounded-pill nav-btn me-2" variant="warning" size="lg" href="/app">
-      !יאללה חפש
-    </Button>
-  </div>
-</Col>
-
+            md={6}
+            className="d-flex flex-column justify-content-center align-items-end text-end p-5"
+          >
+            <h1 className="display-4 fw-bold">
+              הגיע הזמן
+              <br />
+              שהחיפוש יתאים את עצמו אליך
+            </h1>
+            <p className="lead text-muted">
+              בונה עבורך חווית חיפוש דירה מותאמת אישית שמבינה אותך ואת הסביבה
+              שתרצה לחיות בה
+            </p>
+            <div className="d-flex gap-3 mt-4 ">
+              <Button
+                className="rounded-pill nav-btn me-2"
+                variant="warning"
+                size="lg"
+                href="/app"
+              >
+                !יאללה חפש
+              </Button>
+            </div>
+          </Col>
         </Row>
       </Container>
+      <ReviewsCarousel />
     </div>
   );
 };

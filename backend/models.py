@@ -1,6 +1,7 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text, Float, Date, UniqueConstraint
 from database import Base
 from datetime import date
+from sqlalchemy.orm import relationship
 
 
 class Users(Base):
@@ -12,6 +13,8 @@ class Users(Base):
     last_name = Column(String, nullable = False)
     password = Column(String, nullable = False)
     is_admin = Column(Boolean, nullable = False)
+
+    reviews = relationship("Review", back_populates="user")
 
 class UserPreferences(Base):
     __tablename__ = 'UserPreferences'
@@ -92,6 +95,9 @@ class Review(Base):
     content = Column(Text, nullable = False)
     rating = Column(Integer, nullable = False)
     created_at = Column(Date, default = date.today, nullable = False)
+    is_visible = Column(Boolean, default=False)
+
+    user = relationship("Users", back_populates="reviews")
 
 
 

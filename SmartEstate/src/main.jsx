@@ -21,6 +21,7 @@ import ManageApartments from "./Components/Admin/ManageApartments.jsx";
 import AnalyticsDashboard from "./Components/Admin/AnalyticsDashboard.jsx";
 import AdDetails from "./Components/User/AdDetails.jsx";
 import LandingPage from "./Components/LandingPage";
+import ManageReviews from "./Components/Admin/ManageReviews.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -30,7 +31,7 @@ createRoot(document.getElementById("root")).render(
         <Routes>
           {/* Wrap all routes in a layout */}
           <Route element={<Layout />}>
-            <Route path="/" element={< LandingPage/>} />
+            <Route path="/" element={<LandingPage />} />
             <Route path="/app" element={<App />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
@@ -47,6 +48,7 @@ createRoot(document.getElementById("root")).render(
               path="/personal-questionnaire"
               element={<PersonalQuestionnaire />}
             />
+            <Route path="/admin/feedback" element={<ManageReviews />} />
             {/* Add more routes here as needed */}
           </Route>
         </Routes>
