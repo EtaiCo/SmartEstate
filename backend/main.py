@@ -620,30 +620,100 @@ async def get_user_by_id(user_id: int, request: Request, db: Session = Depends(g
     }
 
 
+# =======================
+#  DELETE /users/{user_id}
+# =======================
 @app.delete("/users/{user_id}")
-def delete_user(user_id: int, request: Request, db: Session = Depends(get_db)):
-    # Check if user is admin
-    user_session = request.session.get("user")
-    if not user_session or not user_session.get("is_admin"):
-        raise HTTPException(status_code=403, detail="Not authorized - Admin privileges required")
-    
-    # Find the user by ID
+def delete_user(
+    user_id: int,
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    """
+    מוחק משתמש <user_id> וכל הרשומות התלויות בו
+    (מודעות, לייקים, העדפות, ביקורות).
+    דרושות הרשאות Admin.
+    """
+    # --- הרשאות -----------------------------------------------------------
+    session_user = request.session.get("user")
+    if not session_user or not session_user.get("is_admin"):
+        raise HTTPException(
+            status_code=403,
+            detail="Not authorized – Admin privileges required"
+        )
+
+    # --- מציאת המשתמש ------------------------------------------------------
     user = db.query(models.Users).filter(models.Users.ID == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    
-    # Don't allow deleting yourself
-    if user.email == user_session.get("email"):
-        raise HTTPException(status_code=400, detail="Cannot delete your own account")
-    
-    # Delete the user
+
+    # מניעת התאבדות אדמינית 😉
+    if user.email == session_user["email"]:
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot delete your own account"
+        )
+
     try:
+        # ------------------------------------------------------------------
+        # שלב 1: מחיקת Likes שמצביעים על מודעות של המשתמש  (ad_id ∈ …)
+        # ------------------------------------------------------------------
+        ad_ids_subq = (
+            db.query(models.Ad.id)
+              .filter(models.Ad.user_id == user_id)
+              .subquery()
+        )
+        (
+            db.query(models.LikedAds)
+              .filter(models.LikedAds.ad_id.in_(ad_ids_subq))
+              .delete(synchronize_session=False)
+        )
+
+        # ------------------------------------------------------------------
+        # שלב 2: מחיקת Likes של המשתמש עצמו          (user_id = …)
+        # ------------------------------------------------------------------
+        (
+            db.query(models.LikedAds)
+              .filter(models.LikedAds.user_id == user_id)
+              .delete(synchronize_session=False)
+        )
+
+        # ------------------------------------------------------------------
+        # שלב 3: מחיקת ביקורות, העדפות ומודעות
+        # ------------------------------------------------------------------
+        (
+            db.query(models.Review)
+              .filter(models.Review.user_id == user_id)
+              .delete(synchronize_session=False)
+        )
+        (
+            db.query(models.UserPreferences)
+              .filter(models.UserPreferences.user_id == user_id)
+              .delete(synchronize_session=False)
+        )
+        (
+            db.query(models.Ad)
+              .filter(models.Ad.user_id == user_id)
+              .delete(synchronize_session=False)
+        )
+
+        # ------------------------------------------------------------------
+        # שלב 4: מחיקת המשתמש עצמו
+        # ------------------------------------------------------------------
         db.delete(user)
+
+        # ------------------------------------------------------------------
+        # קומיט וסיום
+        # ------------------------------------------------------------------
         db.commit()
-        return {"detail": f"User with ID {user_id} deleted successfully"}
+        return {"detail": f"User {user_id} deleted successfully"}
+
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Database error: {e}"
+        )
 
 @app.get("/admin/users")
 async def get_all_users(request: Request, db: Session = Depends(get_db)):
