@@ -22,14 +22,13 @@ It combines advanced search, user reviews, and pricing analytics to make real-es
 
 Open a new terminal and run:
 
-bash
 cd backend
 python -m venv env
 env\Scripts\activate
+pip install -r requirements.txt
+uvicorn main:app --reload
 
+### 2. Start the frontend
 Open another new terminal and run:
 cd SmartEstate
 npm run dev
-
-pip install -r requirements.txt
-uvicorn main:app --reload
